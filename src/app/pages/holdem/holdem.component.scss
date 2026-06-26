@@ -30,21 +30,27 @@
   font-weight: 700;
 }
 
-// Banner de regla
-.buyin-rule-banner {
+// Banners de reglas
+.rules-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.rule-banner {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  background: rgba(201,162,39,0.07);
-  border: 1px solid rgba(201,162,39,0.2);
-  border-radius: 12px;
-  padding: 0.85rem 1.25rem;
-  margin-bottom: 1.5rem;
-  font-size: 0.88rem;
+  background: rgba(201,162,39,0.06);
+  border: 1px solid rgba(201,162,39,0.15);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font-size: 0.86rem;
   color: #a0aec0;
-  line-height: 1.5;
+  line-height: 1.45;
   strong { color: #f0d060; }
-  .rule-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .rule-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
 }
 
 // Chips de niveles
@@ -137,6 +143,12 @@
   z-index: 200; padding: 1rem;
 }
 
+.modal-sub {
+  color: #a0aec0;
+  font-size: 0.85rem;
+  margin: -0.75rem 0 0;
+}
+
 .modal {
   background: #1a2d6b;
   border: 1px solid rgba(201,162,39,0.25);
@@ -183,9 +195,12 @@
   display: flex; justify-content: space-between; align-items: center;
   font-size: 0.9rem;
   span { color: #a0aec0; }
-  .gold   { color: #c9a227; }
-  .danger { color: #e53935; }
+  .gold    { color: #c9a227; }
+  .danger  { color: #e53935; }
+  .success { color: #4caf50; }
 }
+
+.mt-2 { margin-top: 1rem; }
 
 .modal-actions { display: flex; gap: 0.75rem; .btn { flex: 1; } }
 

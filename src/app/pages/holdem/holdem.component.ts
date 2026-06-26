@@ -31,11 +31,12 @@ export class HoldemComponent implements OnInit {
   showCreate = signal(false);
   createLoading = signal(false);
 
-  selectedBuyIn    = signal(HOLDEM_CONFIGS[1].buyIn);
-  selectedMaxPlayers = signal(6);
+  selectedBuyIn = signal(HOLDEM_CONFIGS[1].buyIn);
 
+  // Fijo: 4 jugadores max, arranca con 2
+  readonly MAX_PLAYERS = 4;
+  readonly MIN_TO_START = 2;
   readonly CONFIGS = HOLDEM_CONFIGS;
-  readonly PLAYER_OPTIONS = [2, 4, 6];
 
   waiting = computed(() => this.tables().filter(t => t.status === 'waiting'));
   playing = computed(() => this.tables().filter(t => t.status === 'playing'));
@@ -61,7 +62,7 @@ export class HoldemComponent implements OnInit {
 
   create() {
     this.createLoading.set(true);
-    this.svc.createTable(this.selectedBuyIn(), this.selectedMaxPlayers()).subscribe({
+    this.svc.createTable(this.selectedBuyIn(), this.MAX_PLAYERS).subscribe({
       next: (t) => {
         this.createLoading.set(false);
         this.showCreate.set(false);
