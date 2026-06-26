@@ -1,0 +1,201 @@
+<div class="game-layout">
+
+  <!-- Header de la partida -->
+  <div class="game-header">
+    <button class="btn-icon" (click)="leaveGame()" title="Salir">←</button>
+    <div class="game-meta">
+      <span class="round-badge">Ronda {{ gameState()?.round ?? '—' }}</span>
+      <span class="bet-badge">Apuesta: ${{ gameState()?.bet | number }}</span>
+      <span class="limit-badge">Límite: {{ gameState()?.pointLimit }} pts</span>
+    </div>
+    <div class="my-score-chip">
+      Mis puntos: <strong>{{ myScore() }}</strong>
+    </div>
+  </div>
+
+  <!-- Mensaje de error flotante -->
+  @if (errorMessage()) {
+    <div class="toast-error">{{ errorMessage() }}</div>
+  }
+
+  <!-- SALA DE ESPERA -->
+  @if (gameState()?.status === 'waiting' || !gameState()) {
+    <div class="waiting-room">
+      <div class="waiting-icon">🃏</div>
+      <h2>Sala de espera</h2>
+      <p>{{ waitingMessage() }}</p>
+      <div class="waiting-players">
+        @for (p of gameState()?.players ?? []; track p.id) {
+          <div class="waiting-player">
+            <span class="wp-dot"></span>{{ p.username }}
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- MESA DE JUEGO -->
+  @if (gameState()?.status === 'playing') {
+    <div class="game-table">
+
+      <!-- Jugadores rivales (arriba) -->
+      <div class="opponents-row">
+        @for (player of opponents(); track player.id) {
+          <div class="opponent-area">
+            <app-player-avatar
+              [avatar]="'🎴'"
+              [username]="player.username"
+              [score]="player.score"
+              [isCurrentTurn]="gameState()?.currentTurn === player.id"
+              size="md"
+            />
+            <div class="opponent-hand">
+              @for (i of [].constructor(player.cardCount); track $index) {
+                <div class="card-back-mini"></div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Centro: mazo + descarte + acciones -->
+      <div class="center-area">
+
+        <!-- Mazo -->
+        <div class="pile-area">
+          <div
+            class="deck-pile"
+            [class.drawable]="canDraw()"
+            (click)="drawFromDeck()"
+            title="Robar del mazo"
+          >
+            <div class="deck-count">{{ gameState()?.deckCount }}</div>
+            <div class="pile-label">Mazo</div>
+          </div>
+        </div>
+
+        <!-- Descarte -->
+        <div class="pile-area">
+          @if (gameState()?.discardTop) {
+            <div [class.drawable]="canDraw()" (click)="drawFromDiscard()">
+              <app-card
+                [suit]="gameState()!.discardTop!.suit"
+                [value]="gameState()!.discardTop!.value"
+                [disabled]="!canDraw()"
+              />
+            </div>
+          } @else {
+            <div class="empty-discard">Descarte vacío</div>
+          }
+          <div class="pile-label">Descarte</div>
+        </div>
+
+        <!-- Acciones del turno -->
+        <div class="turn-actions">
+          @if (isMyTurn()) {
+            @if (!hasDrawn()) {
+              <p class="turn-hint">Tu turno — robá una carta</p>
+            } @else {
+              <p class="turn-hint">Seleccioná una carta para descartar</p>
+              <button
+                class="btn btn-outline btn-sm"
+                (click)="discard()"
+                [disabled]="selectedCardIndex() === null"
+              >
+                Descartar
+              </button>
+              <button class="btn btn-gold btn-sm" (click)="cut()">
+                ✂️ Cortar
+              </button>
+              <button class="btn btn-gold btn-sm" (click)="declareChinchon()">
+                ✨ Chinchón
+              </button>
+            }
+          } @else {
+            <p class="turn-hint waiting">Turno de {{ getPlayerName(gameState()!.currentTurn) }}...</p>
+          }
+        </div>
+      </div>
+
+      <!-- Mi mano (abajo) -->
+      <div class="my-hand-area">
+        <div class="my-hand-label">
+          Tu mano
+          @if (hasDrawn()) {
+            <span class="hint-chip">Seleccioná para descartar</span>
+          }
+        </div>
+        <div class="my-hand">
+          @for (card of myHand(); track $index) {
+            <app-card
+              [suit]="card.suit"
+              [value]="card.value"
+              [selected]="selectedCardIndex() === $index"
+              [disabled]="!hasDrawn()"
+              (cardClick)="selectCard($index)"
+            />
+          }
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>
+
+<!-- OVERLAY: Fin de ronda -->
+@if (roundEndData()) {
+  <div class="overlay-backdrop">
+    <div class="overlay-card">
+      <div class="overlay-icon">
+        {{ roundEndData()!.type === 'chinchon' ? '✨' : '✂️' }}
+      </div>
+      <h2>
+        {{ roundEndData()!.type === 'chinchon' ? '¡Chinchón!' : '¡Corte!' }}
+      </h2>
+      <p class="overlay-winner">{{ roundEndWinnerName() }} ganó la ronda</p>
+
+      <div class="scores-list">
+        @for (player of gameState()?.players ?? []; track player.id) {
+          <div class="score-row">
+            <span>{{ player.username }}</span>
+            <span class="score-val" [class.danger]="player.score >= gameState()!.pointLimit">
+              {{ player.score }} pts
+            </span>
+          </div>
+        }
+      </div>
+
+      <button class="btn btn-primary w-full" (click)="continueAfterRound()">
+        Continuar
+      </button>
+    </div>
+  </div>
+}
+
+<!-- OVERLAY: Fin de partida -->
+@if (gameOverData()) {
+  <div class="overlay-backdrop">
+    <div class="overlay-card">
+      <div class="overlay-icon">{{ iWon() ? '🏆' : '😔' }}</div>
+      <h2>{{ iWon() ? '¡Ganaste!' : 'Fin de la partida' }}</h2>
+      <p class="overlay-winner">
+        {{ iWon() ? '¡Felicitaciones! Sos el campeón de esta mesa.' : gameOverWinnerName() + ' ganó la partida.' }}
+      </p>
+
+      <div class="scores-list">
+        @for (player of gameState()?.players ?? []; track player.id) {
+          <div class="score-row">
+            <span>{{ player.username }}</span>
+            <span class="score-val">{{ gameOverData()!.scores[player.id] }} pts</span>
+          </div>
+        }
+      </div>
+
+      <div class="overlay-actions">
+        <button class="btn btn-outline" (click)="leaveGame()">Ver mesas</button>
+        <button class="btn btn-primary" (click)="goToDashboard()">Ir al inicio</button>
+      </div>
+    </div>
+  </div>
+}

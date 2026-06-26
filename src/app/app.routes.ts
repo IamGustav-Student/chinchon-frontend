@@ -35,5 +35,10 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./pages/register/register.component').then(m => m.RegisterComponent),
   },
+  {
+    path: 'game/:id',
+    loadComponent: () => import('./pages/game/game.component').then(m => m.GameComponent),
+    canActivate: [authGuard],
+  },
   { path: '**', redirectTo: '/dashboard' },
 ];

@@ -1,0 +1,380 @@
+.game-layout {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 56px); // descontando navbar
+  background: radial-gradient(ellipse at center, #1a2d6b 0%, #0d1b4b 100%);
+  overflow: hidden;
+  position: relative;
+}
+
+// ─── HEADER ────────────────────────────────────────────────────────────────
+.game-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1.25rem;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 1px solid rgba(201,162,39,0.15);
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: none;
+  border: 1px solid rgba(201,162,39,0.3);
+  color: #c9a227;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  &:hover { background: rgba(201,162,39,0.1); }
+}
+
+.game-meta {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.round-badge, .bet-badge, .limit-badge {
+  background: rgba(201,162,39,0.12);
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 20px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.8rem;
+  color: #f0d060;
+  font-weight: 600;
+}
+
+.my-score-chip {
+  font-size: 0.85rem;
+  color: #a0aec0;
+  margin-left: auto;
+  strong { color: #c9a227; }
+}
+
+// ─── TOAST DE ERROR ─────────────────────────────────────────────────────────
+.toast-error {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #e53935;
+  color: #fff;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 50;
+  animation: fadeIn 0.2s ease;
+}
+
+// ─── SALA DE ESPERA ──────────────────────────────────────────────────────────
+.waiting-room {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+
+  .waiting-icon { font-size: 4rem; }
+  h2 { color: #c9a227; }
+  p  { color: #a0aec0; }
+}
+
+.waiting-players {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.waiting-player {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.wp-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #4caf50;
+  flex-shrink: 0;
+}
+
+// ─── MESA DE JUEGO ───────────────────────────────────────────────────────────
+.game-table {
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  padding: 0.75rem;
+  gap: 0.75rem;
+}
+
+// Rivales
+.opponents-row {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding: 0.5rem;
+}
+
+.opponent-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.opponent-hand {
+  display: flex;
+  gap: -6px;
+}
+
+.card-back-mini {
+  width: 28px;
+  height: 42px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #1a2d6b, #243a80);
+  border: 1px solid rgba(201,162,39,0.3);
+  margin-left: -6px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+
+  &:first-child { margin-left: 0; }
+}
+
+// Centro
+.center-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.pile-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pile-label {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.deck-pile {
+  width: 70px;
+  height: 105px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1a2d6b, #243a80);
+  border: 2px solid rgba(201,162,39,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  transition: all 0.2s;
+  position: relative;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.2), 6px 6px 0 rgba(0,0,0,0.1);
+
+  &.drawable {
+    cursor: pointer;
+    &:hover {
+      border-color: #c9a227;
+      transform: translateY(-4px);
+      box-shadow: 3px 8px 16px rgba(0,0,0,0.3);
+    }
+  }
+
+  .deck-count {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #c9a227;
+  }
+}
+
+.empty-discard {
+  width: 70px;
+  height: 105px;
+  border-radius: 8px;
+  border: 2px dashed rgba(201,162,39,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #a0aec0;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+// Acciones del turno
+.turn-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 140px;
+}
+
+.turn-hint {
+  font-size: 0.85rem;
+  color: #c9a227;
+  font-weight: 600;
+  text-align: center;
+  margin: 0;
+
+  &.waiting { color: #a0aec0; font-weight: 400; }
+}
+
+.btn-sm { padding: 0.4rem 1rem; font-size: 0.85rem; }
+
+.btn-gold {
+  background: linear-gradient(135deg, #c9a227, #f0d060);
+  color: #0d1b4b;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  &:hover { transform: translateY(-1px); filter: brightness(1.1); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+}
+
+// Mi mano
+.my-hand-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.my-hand-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: #a0aec0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hint-chip {
+  background: rgba(201,162,39,0.1);
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: 20px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  color: #f0d060;
+}
+
+.my-hand {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 0.5rem 0.25rem 0.75rem;
+  max-width: 100%;
+
+  // Scrollbar sutil
+  &::-webkit-scrollbar { height: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba(201,162,39,0.3); border-radius: 2px; }
+}
+
+// ─── OVERLAYS ────────────────────────────────────────────────────────────────
+.overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+  animation: fadeIn 0.25s ease;
+}
+
+.overlay-card {
+  background: #1a2d6b;
+  border: 1px solid rgba(201,162,39,0.3);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+
+  h2 { margin: 0; font-size: 1.8rem; }
+}
+
+.overlay-icon { font-size: 3.5rem; }
+
+.overlay-winner { color: #a0aec0; margin: 0; font-size: 0.95rem; }
+
+.scores-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  background: #243a80;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+}
+
+.score-val {
+  font-weight: 700;
+  color: #c9a227;
+  &.danger { color: #e53935; }
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  .btn { flex: 1; }
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+.drawable { cursor: pointer; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .center-area { gap: 1rem; }
+  .turn-actions { min-width: 110px; }
+  .opponents-row { gap: 1rem; }
+}
