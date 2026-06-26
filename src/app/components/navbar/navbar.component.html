@@ -1,0 +1,16 @@
+@if (auth.isLoggedIn()) {
+  <nav class="navbar">
+    <a class="navbar-logo" routerLink="/dashboard">🃏 Chinchón</a>
+    <ul class="navbar-links">
+      <li><a routerLink="/dashboard" routerLinkActive="active">Inicio</a></li>
+      <li><a routerLink="/tables" routerLinkActive="active">Mesas</a></li>
+      <li><a routerLink="/ranking" routerLinkActive="active">Ranking</a></li>
+      <li><a routerLink="/profile" routerLinkActive="active">Perfil</a></li>
+      <li><a routerLink="/rules" routerLinkActive="active">Reglas</a></li>
+    </ul>
+    <div class="navbar-user">
+      <span class="balance">${{ auth.currentUser()?.balance | number }}</span>
+      <button class="btn btn-outline btn-sm" (click)="logout()">Salir</button>
+    </div>
+  </nav>
+}
