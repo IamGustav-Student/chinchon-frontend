@@ -3,11 +3,13 @@ import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { GameService, TableSummary } from '../../services/game.service';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 import { TableCardComponent } from '../../components/table-card/table-card.component';
+import { SkeletonComponent } from '../../components/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-tables',
-  imports: [DecimalPipe, TableCardComponent],
+  imports: [DecimalPipe, TableCardComponent, SkeletonComponent],
   templateUrl: './tables.component.html',
   styleUrl: './tables.component.scss',
 })
@@ -15,6 +17,7 @@ export class TablesComponent implements OnInit {
   private game = inject(GameService);
   auth = inject(AuthService);
   private router = inject(Router);
+  private toast = inject(ToastService);
 
   tables = signal<TableSummary[]>([]);
   loading = signal(true);
@@ -49,7 +52,7 @@ export class TablesComponent implements OnInit {
   joinTable(id: string) {
     this.game.joinTable(id).subscribe({
       next: () => this.router.navigate(['/game', id]),
-      error: (err) => alert(err.error?.error ?? 'No se pudo unir a la mesa.'),
+      error: (err) => this.toast.error(err.error?.error ?? 'No se pudo unir a la mesa.'),
     });
   }
 
@@ -68,7 +71,9 @@ export class TablesComponent implements OnInit {
         this.router.navigate(['/game', table.id]);
       },
       error: (err) => {
-        this.createError.set(err.error?.error ?? 'Error al crear la mesa.');
+        const msg = err.error?.error ?? 'Error al crear la mesa.';
+        this.createError.set(msg);
+        this.toast.error(msg);
         this.createLoading.set(false);
       },
     });

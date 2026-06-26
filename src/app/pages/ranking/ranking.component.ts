@@ -3,12 +3,13 @@ import { DecimalPipe } from '@angular/common';
 import { RankingService, RankingEntry } from '../../services/ranking.service';
 import { AuthService } from '../../services/auth.service';
 import { RankingPodiumComponent } from '../../components/ranking-podium/ranking-podium.component';
+import { SkeletonComponent } from '../../components/skeleton/skeleton.component';
 
 const PRIZES = [280000, 230000, 180000, 120000, 90000, 80000, 70000, 60000, 50000, 40000];
 
 @Component({
   selector: 'app-ranking',
-  imports: [DecimalPipe, RankingPodiumComponent],
+  imports: [DecimalPipe, RankingPodiumComponent, SkeletonComponent],
   templateUrl: './ranking.component.html',
   styleUrl: './ranking.component.scss',
 })

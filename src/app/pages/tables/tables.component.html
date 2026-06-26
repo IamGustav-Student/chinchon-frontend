@@ -22,7 +22,9 @@
   </div>
 
   @if (loading()) {
-    <p style="color:#a0aec0; text-align:center">Cargando mesas...</p>
+    <div class="tables-grid">
+      <app-skeleton type="card" [count]="4" />
+    </div>
   } @else {
 
     <!-- Mesas disponibles -->

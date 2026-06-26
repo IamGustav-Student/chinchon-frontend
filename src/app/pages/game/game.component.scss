@@ -51,27 +51,23 @@
   font-weight: 600;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
 .my-score-chip {
   font-size: 0.85rem;
   color: #a0aec0;
-  margin-left: auto;
   strong { color: #c9a227; }
 }
 
-// ─── TOAST DE ERROR ─────────────────────────────────────────────────────────
-.toast-error {
-  position: absolute;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #e53935;
-  color: #fff;
-  padding: 0.5rem 1.25rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  z-index: 50;
-  animation: fadeIn 0.2s ease;
+// Modal de confirmación de salida (no usa overlay-icon)
+.confirm-card {
+  gap: 1rem;
+  p { color: #a0aec0; font-size: 0.9rem; }
 }
 
 // ─── SALA DE ESPERA ──────────────────────────────────────────────────────────
@@ -367,6 +363,20 @@
 
 // ─── UTILS ───────────────────────────────────────────────────────────────────
 .drawable { cursor: pointer; }
+.w-full { width: 100%; }
+
+.btn-danger {
+  background: #e53935;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  &:hover { background: #c62828; }
+}
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }

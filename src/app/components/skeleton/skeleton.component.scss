@@ -1,0 +1,90 @@
+$shimmer: linear-gradient(90deg, #1a2d6b 25%, #243a80 50%, #1a2d6b 75%);
+
+@mixin shimmer {
+  background: $shimmer;
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+
+// Línea genérica
+.sk-line {
+  height: 14px;
+  margin-bottom: 0.5rem;
+  @include shimmer;
+  &.w-20  { width: 20%; }
+  &.w-25  { width: 25%; }
+  &.w-30  { width: 30%; }
+  &.w-40  { width: 40%; }
+  &.w-50  { width: 50%; }
+  &.w-55  { width: 55%; }
+  &.w-60  { width: 60%; }
+  &.w-70  { width: 70%; }
+  &.w-80  { width: 80%; }
+  &.w-100 { width: 100%; }
+}
+
+// Tarjeta de mesa skeleton
+.sk-card {
+  background: #1a2d6b;
+  border: 1px solid rgba(201,162,39,0.1);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sk-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  .sk-line { margin: 0; }
+}
+
+.sk-btn {
+  width: 80px;
+  height: 32px;
+  border-radius: 8px;
+  @include shimmer;
+}
+
+// Avatar skeleton
+.sk-avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  .sk-line { margin: 0; }
+}
+
+.sk-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  @include shimmer;
+}
+
+// Fila de tabla skeleton
+.sk-row {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr auto auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.9rem 1.25rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  .sk-line { margin: 0; }
+}
+
+.sk-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  @include shimmer;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

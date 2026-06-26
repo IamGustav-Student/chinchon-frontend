@@ -2,21 +2,19 @@
 
   <!-- Header de la partida -->
   <div class="game-header">
-    <button class="btn-icon" (click)="leaveGame()" title="Salir">←</button>
+    <button class="btn-icon" (click)="confirmLeave()" title="Salir">←</button>
     <div class="game-meta">
       <span class="round-badge">Ronda {{ gameState()?.round ?? '—' }}</span>
       <span class="bet-badge">Apuesta: ${{ gameState()?.bet | number }}</span>
       <span class="limit-badge">Límite: {{ gameState()?.pointLimit }} pts</span>
     </div>
-    <div class="my-score-chip">
-      Mis puntos: <strong>{{ myScore() }}</strong>
+    <div class="header-right">
+      <div class="my-score-chip">Mis puntos: <strong>{{ myScore() }}</strong></div>
+      <button class="btn-icon" (click)="toggleMute()" [title]="muted() ? 'Activar sonido' : 'Silenciar'">
+        {{ muted() ? '🔇' : '🔊' }}
+      </button>
     </div>
   </div>
-
-  <!-- Mensaje de error flotante -->
-  @if (errorMessage()) {
-    <div class="toast-error">{{ errorMessage() }}</div>
-  }
 
   <!-- SALA DE ESPERA -->
   @if (gameState()?.status === 'waiting' || !gameState()) {
@@ -104,12 +102,8 @@
               >
                 Descartar
               </button>
-              <button class="btn btn-gold btn-sm" (click)="cut()">
-                ✂️ Cortar
-              </button>
-              <button class="btn btn-gold btn-sm" (click)="declareChinchon()">
-                ✨ Chinchón
-              </button>
+              <button class="btn btn-gold btn-sm" (click)="cut()">✂ Cortar</button>
+              <button class="btn btn-gold btn-sm" (click)="declareChinchon()">Chinchón</button>
             }
           } @else {
             <p class="turn-hint waiting">Turno de {{ getPlayerName(gameState()!.currentTurn) }}...</p>
@@ -132,6 +126,7 @@
               [value]="card.value"
               [selected]="selectedCardIndex() === $index"
               [disabled]="!hasDrawn()"
+              [animateIn]="newCardIndex() === $index"
               (cardClick)="selectCard($index)"
             />
           }
@@ -143,12 +138,26 @@
 
 </div>
 
+<!-- OVERLAY: Confirmar salida -->
+@if (showLeaveConfirm()) {
+  <div class="overlay-backdrop">
+    <div class="overlay-card confirm-card">
+      <h2>Salir de la partida</h2>
+      <p>¿Estás seguro? Si salís durante la partida podrías perder la apuesta.</p>
+      <div class="overlay-actions">
+        <button class="btn btn-outline" (click)="cancelLeave()">Cancelar</button>
+        <button class="btn btn-danger" (click)="leaveGame()">Salir igualmente</button>
+      </div>
+    </div>
+  </div>
+}
+
 <!-- OVERLAY: Fin de ronda -->
 @if (roundEndData()) {
   <div class="overlay-backdrop">
     <div class="overlay-card">
       <div class="overlay-icon">
-        {{ roundEndData()!.type === 'chinchon' ? '✨' : '✂️' }}
+        {{ roundEndData()!.type === 'chinchon' ? '✨' : '✂' }}
       </div>
       <h2>
         {{ roundEndData()!.type === 'chinchon' ? '¡Chinchón!' : '¡Corte!' }}
@@ -166,9 +175,7 @@
         }
       </div>
 
-      <button class="btn btn-primary w-full" (click)="continueAfterRound()">
-        Continuar
-      </button>
+      <button class="btn btn-primary w-full" (click)="continueAfterRound()">Continuar</button>
     </div>
   </div>
 }
@@ -180,7 +187,7 @@
       <div class="overlay-icon">{{ iWon() ? '🏆' : '😔' }}</div>
       <h2>{{ iWon() ? '¡Ganaste!' : 'Fin de la partida' }}</h2>
       <p class="overlay-winner">
-        {{ iWon() ? '¡Felicitaciones! Sos el campeón de esta mesa.' : gameOverWinnerName() + ' ganó la partida.' }}
+        {{ iWon() ? '¡Felicitaciones! Sos el campeón.' : gameOverWinnerName() + ' ganó la partida.' }}
       </p>
 
       <div class="scores-list">

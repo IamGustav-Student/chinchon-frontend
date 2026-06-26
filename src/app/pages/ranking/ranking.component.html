@@ -8,7 +8,9 @@
   </div>
 
   @if (loading()) {
-    <p style="color:#a0aec0; text-align:center">Cargando ranking...</p>
+    <div class="ranking-table">
+      <app-skeleton type="table-row" [count]="10" />
+    </div>
   } @else {
 
     <!-- Podio -->
