@@ -1,0 +1,58 @@
+.avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  position: relative;
+
+  &.turn .avatar-icon {
+    border-color: #c9a227;
+    box-shadow: 0 0 12px rgba(201,162,39,0.5);
+  }
+}
+
+.avatar-icon {
+  border-radius: 50%;
+  background: #243a80;
+  border: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+
+  .sm & { width: 40px;  height: 40px;  font-size: 1.2rem; }
+  .md & { width: 56px;  height: 56px;  font-size: 1.8rem; }
+  .lg & { width: 72px;  height: 72px;  font-size: 2.2rem; }
+}
+
+.turn-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background: #c9a227;
+  border-radius: 50%;
+  border: 2px solid #0d1b4b;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.3); opacity: 0.7; }
+}
+
+.avatar-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar-score {
+  font-size: 0.75rem;
+  color: #a0aec0;
+}

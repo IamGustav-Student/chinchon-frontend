@@ -1,1 +1,14 @@
-<p>card works!</p>
+<div
+  class="card"
+  [class.face-down]="faceDown"
+  [class.selected]="selected"
+  [class.disabled]="disabled"
+  (click)="!disabled && cardClick.emit()"
+  [attr.aria-label]="faceDown ? 'Carta boca abajo' : label"
+>
+  @if (faceDown) {
+    <img src="/assets/cards/back.webp" alt="Reverso" class="card-img" />
+  } @else {
+    <img [src]="imageSrc" [alt]="label" class="card-img" />
+  }
+</div>

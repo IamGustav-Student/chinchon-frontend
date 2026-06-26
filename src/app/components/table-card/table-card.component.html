@@ -1,1 +1,33 @@
-<p>table-card works!</p>
+<div class="table-card" [class.playing]="table.status === 'playing'">
+  <div class="table-top">
+    <div class="table-creator">
+      <span class="creator-icon">👤</span>
+      <span>{{ table.creator }}</span>
+    </div>
+    <span class="badge" [class.badge-success]="table.status === 'waiting'" [class.badge-danger]="table.status === 'playing'">
+      {{ table.status === 'waiting' ? 'Esperando' : 'En juego' }}
+    </span>
+  </div>
+
+  <div class="table-bet">${{ table.bet | number }}</div>
+  <div class="table-bet-label">apuesta por jugador</div>
+
+  <div class="table-bottom">
+    <div class="table-players">
+      @for (i of [].constructor(table.maxPlayers); track $index) {
+        <span class="player-slot" [class.filled]="$index < table.players">🪑</span>
+      }
+      <span class="player-count">{{ table.players }}/{{ table.maxPlayers }}</span>
+    </div>
+
+    @if (table.status === 'waiting') {
+      <button class="btn btn-primary btn-sm" (click)="join.emit(table.id)">
+        Jugar ${{ table.bet | number }}
+      </button>
+    } @else {
+      <button class="btn btn-outline btn-sm" (click)="watch.emit(table.id)">
+        Ver partida
+      </button>
+    }
+  </div>
+</div>

@@ -1,1 +1,119 @@
-<p>tables works!</p>
+<div class="tables-page">
+
+  <div class="page-header">
+    <h2>Mesas de juego</h2>
+    <button class="btn btn-primary" (click)="openCreateModal()">+ Crear mesa</button>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-value">{{ tables().length }}</div>
+      <div class="stat-label">Totales</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">{{ waiting().length }}</div>
+      <div class="stat-label">Disponibles</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">{{ playing().length }}</div>
+      <div class="stat-label">En juego</div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <p style="color:#a0aec0; text-align:center">Cargando mesas...</p>
+  } @else {
+
+    <!-- Mesas disponibles -->
+    @if (waiting().length > 0) {
+      <div>
+        <div class="section-title">Disponibles</div>
+        <div class="tables-grid" style="margin-top:0.75rem">
+          @for (table of waiting(); track table.id) {
+            <app-table-card
+              [table]="table"
+              (join)="joinTable($event)"
+            />
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Partidas en curso -->
+    @if (playing().length > 0) {
+      <div>
+        <div class="section-title">En curso</div>
+        <div class="tables-grid" style="margin-top:0.75rem">
+          @for (table of playing(); track table.id) {
+            <app-table-card
+              [table]="table"
+              (watch)="joinTable($event)"
+            />
+          }
+        </div>
+      </div>
+    }
+
+    @if (tables().length === 0) {
+      <div class="empty-state">
+        <p>No hay mesas activas.</p>
+        <p>¡Creá la primera y esperá a que se sumen jugadores!</p>
+      </div>
+    }
+  }
+
+</div>
+
+<!-- Modal crear mesa -->
+@if (showCreateModal()) {
+  <div class="modal-backdrop" (click)="showCreateModal.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Crear nueva mesa</h3>
+
+      <div class="option-group">
+        <label>Apuesta por jugador</label>
+        <div class="options-row">
+          @for (bet of BETS; track bet) {
+            <button class="opt-btn" [class.selected]="selectedBet() === bet" (click)="selectedBet.set(bet)">
+              ${{ bet | number }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="option-group">
+        <label>Jugadores</label>
+        <div class="options-row">
+          @for (n of PLAYER_OPTIONS; track n) {
+            <button class="opt-btn" [class.selected]="selectedMaxPlayers() === n" (click)="selectedMaxPlayers.set(n)">
+              {{ n }} jugadores
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="option-group">
+        <label>Límite de puntos</label>
+        <div class="options-row">
+          @for (p of POINT_LIMITS; track p) {
+            <button class="opt-btn" [class.selected]="selectedPointLimit() === p" (click)="selectedPointLimit.set(p)">
+              {{ p }} pts
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (createError()) {
+        <p class="error-msg">{{ createError() }}</p>
+      }
+
+      <div class="modal-actions">
+        <button class="btn btn-outline" (click)="showCreateModal.set(false)">Cancelar</button>
+        <button class="btn btn-primary" (click)="createTable()" [disabled]="createLoading()">
+          {{ createLoading() ? 'Creando...' : 'Crear mesa' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,1 +1,10 @@
-<p>player-avatar works!</p>
+<div class="avatar-wrap" [class.turn]="isCurrentTurn" [class]="size">
+  <div class="avatar-icon">{{ avatar }}</div>
+  @if (isCurrentTurn) {
+    <span class="turn-dot"></span>
+  }
+  <div class="avatar-name">{{ username }}</div>
+  @if (score !== null) {
+    <div class="avatar-score">{{ score }} pts</div>
+  }
+</div>

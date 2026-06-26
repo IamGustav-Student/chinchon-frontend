@@ -1,1 +1,61 @@
-<p>ranking works!</p>
+<div class="ranking-page">
+
+  <div class="page-header">
+    <h2>Ranking semanal</h2>
+    @if (countdown()) {
+      <div class="countdown">🔄 Reset en: {{ countdown() }}</div>
+    }
+  </div>
+
+  @if (loading()) {
+    <p style="color:#a0aec0; text-align:center">Cargando ranking...</p>
+  } @else {
+
+    <!-- Podio -->
+    @if (top3().length > 0) {
+      <div class="podium-wrapper">
+        <app-ranking-podium [top3]="top3()" />
+      </div>
+    }
+
+    <!-- Tabla Top 10 -->
+    <div class="ranking-table">
+      <div class="table-header">
+        <span>#</span>
+        <span>Jugador</span>
+        <span style="text-align:right">Puntos</span>
+        <span class="prize-col" style="text-align:right">Premio</span>
+      </div>
+
+      @for (entry of ranking(); track entry.id; let i = $index) {
+        <div class="table-row" [class.top-3]="i < 3">
+          <div class="pos-badge" [class.gold]="i===0" [class.silver]="i===1" [class.bronze]="i===2">
+            {{ i + 1 }}
+          </div>
+
+          <div class="player-cell">
+            <span style="font-size:1.4rem">{{ entry.avatar }}</span>
+            <span class="player-name">{{ entry.username }}</span>
+          </div>
+
+          <div class="points-cell">{{ entry.points | number }}</div>
+          <div class="prize-cell">${{ PRIZES[i] | number }}</div>
+        </div>
+      }
+
+      @if (ranking().length === 0) {
+        <p style="padding:2rem; text-align:center; color:#a0aec0">
+          Todavía no hay jugadores en el ranking esta semana.
+        </p>
+      }
+    </div>
+
+    <!-- Mi posición -->
+    @if (myPosition() > 0) {
+      <div class="my-position">
+        Tu posición esta semana: <strong style="color:#c9a227">#{{ myPosition() }}</strong>
+      </div>
+    }
+
+  }
+</div>

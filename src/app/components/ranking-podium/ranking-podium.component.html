@@ -1,1 +1,14 @@
-<p>ranking-podium works!</p>
+<div class="podium">
+  @for (idx of ORDER; track idx) {
+    @if (top3[idx]) {
+      <div class="podium-slot" [class.first]="idx === 0" [class.second]="idx === 1" [class.third]="idx === 2">
+        <div class="medal">{{ MEDALS[idx] }}</div>
+        <div class="podium-avatar">{{ top3[idx].avatar }}</div>
+        <div class="podium-name">{{ top3[idx].username }}</div>
+        <div class="podium-points">{{ top3[idx].points | number }} pts</div>
+        <div class="podium-prize">${{ PRIZES[idx] | number }}</div>
+        <div class="podium-bar" [class.bar-1]="idx===0" [class.bar-2]="idx===1" [class.bar-3]="idx===2"></div>
+      </div>
+    }
+  }
+</div>

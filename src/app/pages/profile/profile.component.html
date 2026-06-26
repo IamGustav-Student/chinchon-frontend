@@ -1,1 +1,71 @@
-<p>profile works!</p>
+<div class="profile-page">
+
+  <!-- Header del perfil -->
+  <div class="profile-header">
+    <div class="avatar-current">{{ auth.currentUser()?.avatar }}</div>
+    <div class="profile-meta">
+      <div class="profile-username">{{ auth.currentUser()?.username }}</div>
+      <div class="profile-email">{{ auth.currentUser()?.email }}</div>
+      <div class="profile-balance">${{ auth.currentUser()?.balance | number }}</div>
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ stats().games_played }}</div>
+      <div class="stat-label">Partidas jugadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats().games_won }}</div>
+      <div class="stat-label">Ganadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ winRate() }}</div>
+      <div class="stat-label">% Victorias</div>
+    </div>
+  </div>
+
+  <!-- Selector de avatar -->
+  <div class="avatar-section">
+    <h3>Cambiar avatar</h3>
+    <div class="avatars-grid">
+      @for (a of AVATARS; track a) {
+        <button
+          class="avatar-opt"
+          [class.selected]="selectedAvatar() === a"
+          (click)="selectAvatar(a)"
+        >{{ a }}</button>
+      }
+    </div>
+    <button
+      class="btn btn-primary"
+      style="align-self:flex-start"
+      (click)="saveAvatar()"
+      [disabled]="saveLoading() || selectedAvatar() === auth.currentUser()?.avatar"
+    >
+      {{ saveLoading() ? 'Guardando...' : 'Guardar avatar' }}
+    </button>
+  </div>
+
+  <!-- Historial de wallet -->
+  <div class="history-section">
+    <h3>Historial de movimientos</h3>
+    @if (history().length === 0) {
+      <p class="empty-history">No hay movimientos todavía.</p>
+    } @else {
+      <div class="history-list">
+        @for (mov of history(); track $index) {
+          <div class="history-item" [class]="mov.type">
+            <div>
+              <div class="h-type">{{ movementLabel(mov.type) }}</div>
+              <div class="h-date">{{ mov.created_at | date:'dd/MM/yyyy HH:mm' }}</div>
+            </div>
+            <div class="h-amount">${{ mov.amount | number }}</div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+</div>
