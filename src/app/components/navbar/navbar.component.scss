@@ -55,6 +55,13 @@
 
 .btn-sm { padding: 0.35rem 0.9rem; font-size: 0.85rem; }
 
+.nav-tournament {
+  &.active, &:hover {
+    background: rgba(201,162,39,0.15) !important;
+    color: #f0d060 !important;
+  }
+}
+
 @media (max-width: 700px) {
   .navbar { padding: 0.75rem 1rem; gap: 1rem; }
   .navbar-links { gap: 0; }

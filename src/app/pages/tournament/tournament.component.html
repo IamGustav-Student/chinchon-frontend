@@ -1,0 +1,236 @@
+<div class="page-container tournament-page">
+
+  <!-- Header -->
+  <div class="t-header">
+    <div class="t-title-group">
+      <span class="trophy-icon">🏆</span>
+      <div>
+        <h2>Torneo del Sábado</h2>
+        <p class="t-subtitle">Todos los sábados a las 18:00 hs (Argentina)</p>
+      </div>
+    </div>
+    @if (countdown() && info()?.status !== 'in_progress' && info()?.status !== 'finished') {
+      <div class="countdown-chip">⏳ {{ countdown() }}</div>
+    }
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="t-grid">
+      <app-skeleton type="card" [count]="2" />
+    </div>
+  }
+
+  <!-- Sin torneo disponible -->
+  @if (!loading() && !info()) {
+    <div class="empty-state panel">
+      <p>No hay torneos programados por ahora. ¡Volvé el próximo sábado!</p>
+    </div>
+  }
+
+  <!-- Torneo cancelado -->
+  @if (info()?.status === 'cancelled') {
+    <div class="panel cancelled-panel">
+      <p>El torneo de esta semana fue <strong>cancelado</strong> por no alcanzar el mínimo de inscriptos. La inscripción fue devuelta a tu billetera.</p>
+    </div>
+  }
+
+  <!-- LOBBY: upcoming / registration_open -->
+  @if (info() && (info()!.status === 'upcoming' || info()!.status === 'registration_open')) {
+    <div class="t-grid">
+
+      <!-- Card: Información del torneo -->
+      <div class="panel t-info-card">
+        <h3>Detalles del torneo</h3>
+        <ul class="t-details">
+          <li>
+            <span class="d-label">Inscripción</span>
+            <span class="d-value gold">${{ info()!.entryFee | number }}</span>
+          </li>
+          <li>
+            <span class="d-label">Inscriptos</span>
+            <span class="d-value">{{ info()!.registeredCount }} jugadores</span>
+          </li>
+          <li>
+            <span class="d-label">Mínimo para arrancar</span>
+            <span class="d-value">{{ info()!.minPlayers }} jugadores</span>
+          </li>
+          <li>
+            <span class="d-label">Formato</span>
+            <span class="d-value">Eliminación directa — mesas de 3 o 4</span>
+          </li>
+          <li>
+            <span class="d-label">Reconexión</span>
+            <span class="d-value">50 segundos por desconexión</span>
+          </li>
+        </ul>
+
+        <div class="prize-breakdown">
+          <div class="prize-item gold-prize">
+            <div class="prize-pos">🥇 Campeón</div>
+            <div class="prize-amount">${{ info()!.winnerPrize | number }}</div>
+            <div class="prize-pct">70% del pozo</div>
+          </div>
+          <div class="prize-item silver-prize">
+            <div class="prize-pos">🥈 Finalista</div>
+            <div class="prize-amount">${{ info()!.finalistPrize | number }}</div>
+            <div class="prize-pct">10% del pozo</div>
+          </div>
+        </div>
+
+        <div class="prize-pool-total">
+          Pozo acumulado: <strong>${{ info()!.prizePool | number }}</strong>
+          <span class="prize-pool-hint">(crece con cada inscripto)</span>
+        </div>
+      </div>
+
+      <!-- Card: Acción del jugador -->
+      <div class="panel t-action-card">
+        @if (info()!.status === 'upcoming') {
+          <div class="status-badge upcoming">Próximamente</div>
+          <h3>La inscripción abrirá pronto</h3>
+          <p class="action-hint">La inscripción se habilita 24 horas antes del torneo y cierra 5 minutos antes de comenzar.</p>
+        } @else {
+          <!-- registration_open -->
+          <div class="status-badge open">Inscripción abierta</div>
+
+          @if (info()!.isRegistered) {
+            <div class="registered-confirm">
+              <div class="check-icon">✓</div>
+              <h3>¡Estás inscripto!</h3>
+              <p>Tu lugar está reservado. Estará buena suerte el sábado.</p>
+            </div>
+            <button
+              class="btn btn-outline w-full"
+              (click)="unregister()"
+              [disabled]="actionLoading()"
+            >
+              {{ actionLoading() ? 'Cancelando...' : 'Cancelar inscripción' }}
+            </button>
+          } @else {
+            <h3>¿Te anotás?</h3>
+            <p class="action-hint">
+              Se descontarán <strong>${{ info()!.entryFee | number }}</strong> de tu billetera al confirmar.
+              Si el torneo se cancela por falta de jugadores, se te devuelve automáticamente.
+            </p>
+            <button
+              class="btn btn-primary w-full"
+              (click)="register()"
+              [disabled]="actionLoading()"
+            >
+              {{ actionLoading() ? 'Procesando...' : 'Inscribirme — $' + (info()!.entryFee | number) }}
+            </button>
+          }
+        }
+
+        <div class="players-progress">
+          <div class="progress-label">
+            <span>{{ info()!.registeredCount }} inscriptos</span>
+            <span>mínimo: {{ info()!.minPlayers }}</span>
+          </div>
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              [style.width.%]="Math.min((info()!.registeredCount / info()!.minPlayers) * 100, 100)"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <!-- EN CURSO -->
+  @if (info()?.status === 'in_progress' && bracket()) {
+
+    <!-- Warning de desconexión -->
+    @if (disconnectWarning()) {
+      <div class="disconnect-warning">
+        ⚠ Desconexión detectada — reconectándote en {{ disconnectWarning()!.seconds }}s o perderás la partida
+      </div>
+    }
+
+    <!-- Mi match actual -->
+    @if (myMatch() && myMatch()!.status !== 'finished') {
+      <div class="panel my-match-card">
+        <div class="my-match-label">TU PARTIDO — Ronda {{ bracket()!.currentRound }}</div>
+        <div class="my-match-players">{{ matchPlayers(myMatch()!) }}</div>
+        @if (myMatch()!.status === 'playing' && myMatch()!.tableId) {
+          <button class="btn btn-primary" (click)="goToMatch()">Ir a mi mesa</button>
+        } @else {
+          <p class="match-pending">Esperando que la mesa sea asignada...</p>
+        }
+      </div>
+    }
+
+    @if (isEliminated()) {
+      <div class="panel eliminated-panel">
+        <span style="font-size:2rem">😔</span>
+        <p>Fuiste eliminado en la ronda {{ bracket()!.currentRound - 1 }}. ¡Mejor suerte el próximo sábado!</p>
+      </div>
+    }
+
+    <!-- Bracket completo -->
+    <div class="bracket-section">
+      <h3>Bracket del torneo</h3>
+      <div class="bracket-scroll">
+        @for (round of roundsArray(); track round) {
+          <div class="bracket-round">
+            <div class="round-title">
+              {{ round === bracket()!.totalRounds ? 'FINAL' : 'Ronda ' + round }}
+            </div>
+            @for (match of matchesForRound(round); track match.matchId) {
+              <div
+                class="bracket-match"
+                [class.my-match]="match.matchId === bracket()!.myMatchId"
+                [class.finished]="match.status === 'finished'"
+                [class.playing]="match.status === 'playing'"
+              >
+                @for (player of match.players; track player.id) {
+                  <div class="bracket-player" [class.winner]="match.winnerId === player.id">
+                    <span class="bp-avatar">{{ player.avatar }}</span>
+                    <span class="bp-name">{{ player.username }}</span>
+                    @if (match.winnerId === player.id) {
+                      <span class="bp-crown">👑</span>
+                    }
+                  </div>
+                }
+                @if (match.status === 'playing') {
+                  <div class="match-live-badge">EN VIVO</div>
+                }
+                @if (match.status === 'pending') {
+                  <div class="match-pending-badge">Por jugar</div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- FINALIZADO -->
+  @if (info()?.status === 'finished' && result()) {
+    <div class="panel result-card">
+      <div class="result-trophy">🏆</div>
+      <h2>¡Torneo finalizado!</h2>
+      <p class="result-subtitle">{{ result()!.totalPlayers }} jugadores participaron</p>
+
+      <div class="result-podium">
+        <div class="result-place gold">
+          <div class="place-icon">🥇</div>
+          <div class="place-name">{{ result()!.winnerUsername }}</div>
+          <div class="place-prize">${{ result()!.winnerPrize | number }}</div>
+        </div>
+        <div class="result-place silver">
+          <div class="place-icon">🥈</div>
+          <div class="place-name">{{ result()!.finalistUsername }}</div>
+          <div class="place-prize">${{ result()!.finalistPrize | number }}</div>
+        </div>
+      </div>
+
+      <p class="result-pool">Pozo total: <strong>${{ result()!.prizePool | number }}</strong></p>
+    </div>
+  }
+
+</div>

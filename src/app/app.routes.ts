@@ -40,5 +40,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/game/game.component').then(m => m.GameComponent),
     canActivate: [authGuard],
   },
+  {
+    path: 'tournament',
+    loadComponent: () => import('./pages/tournament/tournament.component').then(m => m.TournamentComponent),
+    canActivate: [authGuard],
+  },
   { path: '**', redirectTo: '/dashboard' },
 ];
