@@ -1,0 +1,115 @@
+$white: #fafafa;
+$border: #c8c8c8;
+$black: #1a1a1a;
+$red:   #cc2200;
+$back-dark: #1a2d6b;
+$back-accent: #c9a227;
+
+.poker-card {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 7px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $black;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 1px 2px 6px rgba(0,0,0,0.35);
+
+  &.red { color: $red; }
+
+  &.selected {
+    transform: translateY(-10px) !important;
+    box-shadow: 0 0 14px rgba(201,162,39,0.6) !important;
+    border-color: #c9a227;
+  }
+
+  &:hover:not(.disabled):not(.selected) { transform: translateY(-5px); }
+
+  &.disabled { cursor: default; opacity: 0.85; }
+
+  &.animate-in { animation: cardSlideUp 0.25s ease; }
+
+  // Sizes
+  &.sm { width: 44px; height: 64px; border-radius: 5px; }
+  &.md { width: 62px; height: 90px; }
+  &.lg { width: 78px; height: 112px; }
+}
+
+.card-corner {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+
+  .sm & { padding: 2px 3px; }
+  .md & { padding: 3px 5px; }
+  .lg & { padding: 4px 6px; }
+
+  &.top-left  { top: 0; left: 0; }
+  &.bottom-right {
+    bottom: 0; right: 0;
+    transform: rotate(180deg);
+  }
+}
+
+.val {
+  font-weight: 800;
+  .sm & { font-size: 0.65rem; }
+  .md & { font-size: 0.8rem; }
+  .lg & { font-size: 1rem; }
+}
+
+.sym {
+  .sm & { font-size: 0.55rem; }
+  .md & { font-size: 0.65rem; }
+  .lg & { font-size: 0.8rem; }
+}
+
+.card-center {
+  font-weight: 400;
+  .sm & { font-size: 1.1rem; }
+  .md & { font-size: 1.6rem; }
+  .lg & { font-size: 2rem; }
+}
+
+// Reverso
+.back {
+  background: $back-dark;
+  border: 1px solid rgba($back-accent, 0.4);
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 1px 2px 6px rgba(0,0,0,0.35);
+  cursor: default;
+
+  &.sm { width: 44px; height: 64px; border-radius: 5px; }
+  &.md { width: 62px; height: 90px; }
+  &.lg { width: 78px; height: 112px; }
+}
+
+.back-pattern {
+  width: 75%;
+  height: 75%;
+  border: 1px solid rgba($back-accent, 0.3);
+  border-radius: 4px;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba($back-accent, 0.05) 0px,
+    rgba($back-accent, 0.05) 2px,
+    transparent 2px,
+    transparent 8px
+  );
+}
+
+@keyframes cardSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

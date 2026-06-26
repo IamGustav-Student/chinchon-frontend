@@ -41,6 +41,16 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'holdem',
+    loadComponent: () => import('./pages/holdem/holdem.component').then(m => m.HoldemComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'holdem/:id',
+    loadComponent: () => import('./pages/holdem-game/holdem-game.component').then(m => m.HoldemGameComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: 'tournament',
     loadComponent: () => import('./pages/tournament/tournament.component').then(m => m.TournamentComponent),
     canActivate: [authGuard],

@@ -1,0 +1,240 @@
+<div class="holdem-layout">
+
+  <!-- Header -->
+  <div class="holdem-header">
+    <button class="btn-icon" (click)="confirmLeave()" title="Salir">←</button>
+    <div class="header-meta">
+      @if (gameState()) {
+        <span class="meta-chip">Buy-in: ${{ gameState()!.buyIn | number }}</span>
+        <span class="meta-chip">Blinds: ${{ gameState()!.blindsSmall }}/${{ gameState()!.blindsBig }}</span>
+        @if (phaseLabel()) {
+          <span class="meta-chip phase">{{ phaseLabel() }}</span>
+        }
+      }
+    </div>
+    <div class="header-right">
+      @if (me()) {
+        <span class="my-stack">Mi stack: <strong>${{ me()!.stack | number }}</strong></span>
+      }
+      <button class="btn-icon" (click)="toggleMute()" [title]="muted() ? 'Activar sonido' : 'Silenciar'">
+        {{ muted() ? '🔇' : '🔊' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- SALA DE ESPERA -->
+  @if (!gameState() || gameState()!.status === 'waiting') {
+    <div class="waiting-room">
+      <div class="waiting-icon">♠</div>
+      <h2>Esperando jugadores...</h2>
+      <p>La mano comienza cuando haya al menos 2 jugadores sentados.</p>
+      <div class="waiting-players">
+        @for (p of gameState()?.players ?? []; track p.id) {
+          <div class="waiting-player">
+            <span class="wp-dot"></span>{{ p.username }} — ${{ p.stack | number }}
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- MESA DE JUEGO -->
+  @if (gameState() && gameState()!.status !== 'waiting' && gameState()!.status !== 'finished') {
+    <div class="felt-area">
+
+      <!-- Jugadores rivales -->
+      <div class="opponents-ring">
+        @for (player of opponents(); track player.id) {
+          <div class="opponent-seat" [class.is-turn]="gameState()!.currentTurn === player.id" [class.folded]="player.folded">
+            <div class="seat-avatar">{{ player.avatar }}</div>
+            <div class="seat-name">{{ player.username }}</div>
+            <div class="seat-stack">${{ player.stack | number }}</div>
+            @if (player.lastAction) {
+              <div class="action-badge">{{ actionLabel(player.lastAction) }}</div>
+            }
+            @if (player.isDealer) { <div class="role-chip dealer">D</div> }
+            @if (player.isSmallBlind) { <div class="role-chip sb">SB</div> }
+            @if (player.isBigBlind) { <div class="role-chip bb">BB</div> }
+            @if (player.isAllIn) { <div class="allin-badge">ALL-IN</div> }
+            @if (player.currentBet > 0) {
+              <div class="bet-chip">${{ player.currentBet | number }}</div>
+            }
+            <!-- Cartas del rival (boca abajo, excepto en showdown) -->
+            <div class="opponent-cards">
+              @if (gameState()!.status === 'showdown') {
+                @for (card of showdownCards(player.id); track $index) {
+                  <app-poker-card [suit]="card.suit" [value]="card.value" size="sm" />
+                }
+                @if (!hasShowdownCards(player.id)) {
+                  <app-poker-card [faceDown]="true" size="sm" />
+                  <app-poker-card [faceDown]="true" size="sm" />
+                }
+              } @else {
+                <app-poker-card [faceDown]="true" size="sm" [class.invisible]="player.folded" />
+                <app-poker-card [faceDown]="true" size="sm" [class.invisible]="player.folded" />
+              }
+            </div>
+            @if (handWinner(player.id)) {
+              <div class="winner-badge">
+                🏆 {{ handWinner(player.id)!.hand }}
+                <span class="win-amount">+${{ handWinner(player.id)!.amount | number }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Centro: pot + cartas comunitarias -->
+      <div class="center-felt">
+        <div class="pot-display">
+          <span class="pot-label">Pozo</span>
+          <span class="pot-amount">${{ gameState()!.pot | number }}</span>
+        </div>
+
+        <div class="community-cards">
+          @for (card of gameState()!.communityCards; track $index) {
+            <app-poker-card
+              [suit]="card.suit"
+              [value]="card.value"
+              [animateIn]="isNewCommunity($index)"
+              size="md"
+            />
+          }
+          <!-- Placeholders para las cartas que faltan -->
+          @for (i of [].constructor(5 - gameState()!.communityCards.length); track $index) {
+            <div class="community-placeholder"></div>
+          }
+        </div>
+
+        @if (gameState()!.sidePots.length > 0) {
+          <div class="side-pots">
+            @for (sp of gameState()!.sidePots; track $index) {
+              <span class="side-pot-chip">Side pot: ${{ sp.amount | number }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Mi asiento (abajo) -->
+      @if (me()) {
+        <div class="my-seat" [class.is-turn]="isMyTurn()" [class.folded]="me()!.folded">
+
+          <!-- Mis cartas hole -->
+          <div class="my-hole-cards">
+            @for (card of me()!.holeCards ?? []; track $index) {
+              <app-poker-card [suit]="card.suit" [value]="card.value" size="lg" />
+            }
+            @if (!me()!.holeCards || me()!.holeCards!.length === 0) {
+              <app-poker-card [faceDown]="true" size="lg" />
+              <app-poker-card [faceDown]="true" size="lg" />
+            }
+          </div>
+
+          <div class="my-info">
+            <div class="my-name-row">
+              <span class="my-name">{{ auth.currentUser()?.username }}</span>
+              @if (me()!.isDealer) { <span class="role-chip dealer">D</span> }
+              @if (me()!.isSmallBlind) { <span class="role-chip sb">SB</span> }
+              @if (me()!.isBigBlind) { <span class="role-chip bb">BB</span> }
+            </div>
+            <span class="my-stack-big">${{ me()!.stack | number }}</span>
+            @if (me()!.currentBet > 0) {
+              <span class="my-bet">Apostado: ${{ me()!.currentBet | number }}</span>
+            }
+            @if (me()!.isAllIn) { <span class="allin-badge">ALL-IN</span> }
+          </div>
+
+          <!-- Acciones -->
+          @if (isMyTurn() && !me()!.folded) {
+            <div class="actions-panel">
+              <button class="btn action-fold"  (click)="fold()">Fold</button>
+
+              @if (canCheck()) {
+                <button class="btn action-check" (click)="check()">Check</button>
+              } @else {
+                <button class="btn action-call" (click)="call()">
+                  Call ${{ gameState()!.callAmount | number }}
+                </button>
+              }
+
+              @if (canRaise()) {
+                @if (!showRaiseSlider()) {
+                  <button class="btn action-raise" (click)="showRaiseSlider.set(true)">Raise</button>
+                } @else {
+                  <div class="raise-panel">
+                    <input
+                      type="range"
+                      [min]="gameState()!.minRaise"
+                      [max]="gameState()!.maxRaise"
+                      [step]="gameState()!.blindsBig"
+                      [value]="raiseAmount()"
+                      (input)="raiseAmount.set(+$any($event.target).value)"
+                    />
+                    <div class="raise-controls">
+                      <span class="raise-val">${{ raiseAmount() | number }}</span>
+                      <button class="btn action-raise-confirm" (click)="raise()">
+                        Raise ${{ raiseAmount() | number }}
+                      </button>
+                      <button class="btn action-cancel" (click)="showRaiseSlider.set(false)">✕</button>
+                    </div>
+                  </div>
+                }
+              }
+
+              <button class="btn action-allin" (click)="allIn()">All-in</button>
+            </div>
+          } @else if (isMyTurn() && me()!.folded) {
+            <div class="actions-panel">
+              <p class="folded-msg">Esperando la próxima mano...</p>
+            </div>
+          }
+
+          <!-- Recompra -->
+          @if (canRebuy()) {
+            <div class="rebuy-panel">
+              <p>Te quedaste sin fichas. ¿Recomprás?</p>
+              <button class="btn btn-primary" (click)="rebuy()">
+                Recomprar ${{ gameState()!.buyIn | number }} ({{ gameState()!.rebuysLeft }} restante{{ gameState()!.rebuysLeft === 1 ? '' : 's' }})
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+  }
+
+  <!-- Mesa terminada -->
+  @if (gameState()?.status === 'finished') {
+    <div class="finished-state">
+      <p>La mesa se cerró. Las fichas fueron devueltas a tu billetera.</p>
+      <button class="btn btn-primary" (click)="leaveTable()">Volver al lobby</button>
+    </div>
+  }
+
+</div>
+
+<!-- Hand result overlay (auto-cierra en 5s) -->
+@if (handResult()) {
+  <div class="hand-result-overlay">
+    @for (w of handResult()!.winners; track w.playerId) {
+      <div class="hand-winner-chip">
+        🏆 {{ playerUsername(w.playerId) }} — {{ w.hand }} — +${{ w.amount | number }}
+      </div>
+    }
+  </div>
+}
+
+<!-- Confirm leave -->
+@if (showLeaveConfirm()) {
+  <div class="overlay-backdrop">
+    <div class="confirm-modal">
+      <h3>Salir de la mesa</h3>
+      <p>Las fichas que te quedan serán devueltas a tu billetera al salir.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline" (click)="cancelLeave()">Quedarse</button>
+        <button class="btn btn-danger" (click)="leaveTable()">Salir</button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,26 @@
+@if (faceDown) {
+  <div class="poker-card back" [class]="size" [class.animate-in]="animateIn">
+    <div class="back-pattern"></div>
+  </div>
+} @else {
+  <div
+    class="poker-card"
+    [class]="size"
+    [class.red]="isRed"
+    [class.selected]="selected"
+    [class.disabled]="disabled"
+    [class.animate-in]="animateIn"
+    (click)="!disabled && cardClick.emit()"
+    [attr.aria-label]="ariaLabel"
+  >
+    <div class="card-corner top-left">
+      <span class="val">{{ label }}</span>
+      <span class="sym">{{ suitSymbol }}</span>
+    </div>
+    <div class="card-center">{{ suitSymbol }}</div>
+    <div class="card-corner bottom-right">
+      <span class="val">{{ label }}</span>
+      <span class="sym">{{ suitSymbol }}</span>
+    </div>
+  </div>
+}
