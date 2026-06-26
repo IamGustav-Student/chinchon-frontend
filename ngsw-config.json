@@ -1,0 +1,50 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app-shell",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/icons/**"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-ranking",
+      "urls": ["/api/ranking/**"],
+      "cacheConfig": {
+        "maxSize": 5,
+        "maxAge": "5m",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-game",
+      "urls": ["/api/game/**", "/api/perfil/**", "/api/wallet/**"],
+      "cacheConfig": {
+        "maxSize": 20,
+        "maxAge": "0s",
+        "strategy": "freshness"
+      }
+    }
+  ]
+}

@@ -51,7 +51,7 @@ a:hover { color: $secondary-gold; }
   &-danger {
     background: $danger;
     color: #fff;
-    &:hover { background: darken($danger, 8%); }
+    &:hover { background: #c62828; }
   }
   &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 }
