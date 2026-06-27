@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:chinchon-frontend": "node dist/chinchon-frontend/server/server.mjs"
+    "serve:ssr:chinchon-frontend": "node dist/chinchon-frontend/server/server.mjs",
+    "build:vercel": "ng build --configuration production --no-ssr"
   },
   "private": true,
   "dependencies": {
