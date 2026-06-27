@@ -1,0 +1,142 @@
+<div class="truco-page">
+
+  <div class="page-header">
+    <div class="title-group">
+      <h2>Truco</h2>
+      <span class="mode-badge">Argentino</span>
+    </div>
+    <button class="btn btn-primary" (click)="showCreate.set(true)">+ Crear mesa</button>
+  </div>
+
+  <div class="rules-banners">
+    <div class="rule-banner">
+      <span class="rule-icon">🃏</span>
+      <span><strong>Mazo español:</strong> las mismas cartas que en Chinchón (oros, copas, bastos, espadas).</span>
+    </div>
+    <div class="rule-banner">
+      <span class="rule-icon">👥</span>
+      <span><strong>Mesas de 2 jugadores</strong> (mano a mano) o <strong>4 jugadores</strong> (parejas).</span>
+    </div>
+    <div class="rule-banner">
+      <span class="rule-icon">🤝</span>
+      <span><strong>En mesas de 4</strong> cada jugador tiene botones de señas privadas para comunicarse con su compañero sin que los rivales lo vean.</span>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="tables-grid">
+      <app-skeleton type="card" [count]="4" />
+    </div>
+  } @else {
+
+    @if (waiting().length > 0) {
+      <div class="section-title">Disponibles</div>
+      <div class="tables-grid">
+        @for (t of waiting(); track t.id) {
+          <div class="truco-table-card panel">
+            <div class="ttc-header">
+              <div class="ttc-info">
+                <span class="ttc-label">Apuesta</span>
+                <span class="ttc-value gold">{{ buyInLabel(t.buyIn) }}</span>
+              </div>
+              <span class="badge badge-success">Disponible</span>
+            </div>
+            <div class="ttc-detail">
+              <span>{{ t.maxPlayers }} jugadores · hasta {{ t.pointLimit }} pts</span>
+            </div>
+            <div class="ttc-seats">
+              @for (i of [].constructor(t.maxPlayers); track $index) {
+                <div class="seat-dot" [class.taken]="$index < t.playerCount"></div>
+              }
+              <span class="seat-text">{{ t.playerCount }}/{{ t.maxPlayers }}</span>
+            </div>
+            <button class="btn btn-primary w-full" (click)="join(t.id)">Entrar</button>
+          </div>
+        }
+      </div>
+    }
+
+    @if (playing().length > 0) {
+      <div class="section-title mt-2">En juego</div>
+      <div class="tables-grid">
+        @for (t of playing(); track t.id) {
+          <div class="truco-table-card panel">
+            <div class="ttc-header">
+              <div class="ttc-info">
+                <span class="ttc-label">Apuesta</span>
+                <span class="ttc-value gold">{{ buyInLabel(t.buyIn) }}</span>
+              </div>
+              <span class="badge badge-danger">En juego</span>
+            </div>
+            <div class="ttc-detail">
+              <span>{{ t.maxPlayers }} jugadores · hasta {{ t.pointLimit }} pts</span>
+            </div>
+            <div class="ttc-seats">
+              @for (i of [].constructor(t.maxPlayers); track $index) {
+                <div class="seat-dot" [class.taken]="$index < t.playerCount"></div>
+              }
+              <span class="seat-text">{{ t.playerCount }}/{{ t.maxPlayers }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (tables().length === 0) {
+      <div class="empty-state panel">
+        <p>No hay mesas activas. ¡Creá la primera!</p>
+      </div>
+    }
+  }
+
+</div>
+
+@if (showCreate()) {
+  <div class="modal-backdrop" (click)="showCreate.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Nueva mesa de Truco</h3>
+
+      <div class="option-group">
+        <label>Jugadores</label>
+        <div class="options-row">
+          <button class="opt-btn" [class.selected]="selectedPlayers() === 2" (click)="selectedPlayers.set(2)">
+            2 — Mano a mano
+          </button>
+          <button class="opt-btn" [class.selected]="selectedPlayers() === 4" (click)="selectedPlayers.set(4)">
+            4 — Parejas
+          </button>
+        </div>
+      </div>
+
+      <div class="option-group">
+        <label>Hasta los puntos</label>
+        <div class="options-row">
+          <button class="opt-btn" [class.selected]="selectedLimit() === 15" (click)="selectedLimit.set(15)">
+            15 pts
+          </button>
+          <button class="opt-btn" [class.selected]="selectedLimit() === 30" (click)="selectedLimit.set(30)">
+            30 pts
+          </button>
+        </div>
+      </div>
+
+      <div class="option-group">
+        <label>Apuesta por mano ganada</label>
+        <div class="options-row">
+          @for (o of BUYIN_OPTIONS; track o.buyIn) {
+            <button class="opt-btn" [class.selected]="selectedBuyIn() === o.buyIn" (click)="selectedBuyIn.set(o.buyIn)">
+              {{ o.label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-outline" (click)="showCreate.set(false)">Cancelar</button>
+        <button class="btn btn-primary" (click)="create()" [disabled]="createLoading()">
+          {{ createLoading() ? 'Creando...' : 'Crear mesa' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -55,5 +55,15 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/tournament/tournament.component').then(m => m.TournamentComponent),
     canActivate: [authGuard],
   },
+  {
+    path: 'truco',
+    loadComponent: () => import('./pages/truco/truco.component').then(m => m.TrucoComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'truco/:id',
+    loadComponent: () => import('./pages/truco-game/truco-game.component').then(m => m.TrucoGameComponent),
+    canActivate: [authGuard],
+  },
   { path: '**', redirectTo: '/dashboard' },
 ];

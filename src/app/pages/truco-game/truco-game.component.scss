@@ -1,0 +1,440 @@
+// Layout principal
+.truco-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  background: #0c0c0e;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────
+
+.truco-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: #141416;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  &:hover { background: rgba(255,255,255,0.05); }
+}
+
+.score-board {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 0.3rem 0.75rem;
+}
+
+.team-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  .score-label { font-size: 0.65rem; color: #a0aec0; text-transform: uppercase; }
+  .score-value { font-size: 1.2rem; font-weight: 800; color: #fff; }
+  &.winning .score-value { color: #c9a227; }
+}
+
+.score-divider { color: #a0aec0; font-size: 0.8rem; }
+.score-limit   { font-size: 0.75rem; color: #a0aec0; }
+
+.tricks-track {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.trick-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: transparent;
+  &.us   { background: #c9a227; border-color: #c9a227; }
+  &.them { background: #e53935; border-color: #e53935; }
+  &.tie  { background: #a0aec0; border-color: #a0aec0; }
+  &.empty { background: transparent; }
+}
+
+.header-right { margin-left: auto; }
+
+// ── Sala de espera ────────────────────────────────────────────────────────
+
+.waiting-room {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+
+  .waiting-icon { font-size: 3rem; }
+  h2 { color: #c9a227; }
+  p  { color: #a0aec0; }
+}
+
+.waiting-players {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  width: 100%;
+  max-width: 320px;
+}
+
+.waiting-player {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #141416;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  .wp-avatar { font-size: 1.2rem; }
+}
+
+.team-chip {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+  &.team-0 { background: rgba(201,162,39,0.15); color: #c9a227; }
+  &.team-1 { background: rgba(229,57,53,0.15);  color: #e53935; }
+}
+
+// ── Mesa de juego ─────────────────────────────────────────────────────────
+
+.felt-area {
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+  gap: 0;
+  overflow: hidden;
+  background: radial-gradient(ellipse at center, #1a3a1a 0%, #0d1f0d 100%);
+}
+
+.four-players .felt-area {
+  grid-template-rows: auto auto 1fr auto;
+}
+
+// ── Zonas de jugadores ────────────────────────────────────────────────────
+
+.player-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  transition: background 0.2s;
+  &.is-turn { background: rgba(201,162,39,0.07); }
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  .p-avatar { font-size: 1.4rem; }
+  .p-name   { font-size: 0.82rem; color: #a0aec0; }
+}
+
+.mano-chip {
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(201,162,39,0.2);
+  color: #c9a227;
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+}
+
+.action-bubble {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.78rem;
+  color: #fff;
+  &.rival { background: rgba(229,57,53,0.15); border-color: rgba(229,57,53,0.3); color: #e53935; }
+}
+
+.partner-zone {
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.opponents-zone {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.opponent-cards {
+  display: flex;
+  gap: 4px;
+  app-card { transform: scale(0.7); transform-origin: top center; }
+}
+
+// ── Centro ────────────────────────────────────────────────────────────────
+
+.center-felt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+.challenge-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(201,162,39,0.15);
+  border: 1px solid rgba(201,162,39,0.4);
+  border-radius: 12px;
+  padding: 0.5rem 1.25rem;
+  animation: pulse 1.5s infinite;
+
+  .ch-label { font-weight: 700; color: #f0d060; font-size: 1rem; }
+  .ch-pts   { font-size: 0.8rem; color: #a0aec0; }
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201,162,39,0.3); }
+  50%       { box-shadow: 0 0 0 8px rgba(201,162,39,0); }
+}
+
+.trick-cards {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.trick-play {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  .play-name { font-size: 0.7rem; color: #a0aec0; }
+}
+
+// ── Mi zona ───────────────────────────────────────────────────────────────
+
+.my-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem 1rem;
+  background: rgba(0,0,0,0.25);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  &.is-turn { background: rgba(201,162,39,0.06); }
+}
+
+.my-cards {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.my-card-wrap {
+  cursor: pointer;
+  transition: transform 0.15s;
+  &.selected { transform: translateY(-14px); }
+  &.played { opacity: 0.3; pointer-events: none; }
+}
+
+.my-info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  .p-avatar { font-size: 1.2rem; }
+  .my-name  { font-size: 0.82rem; color: #a0aec0; }
+}
+
+.partner-signal-toast {
+  background: rgba(76,175,80,0.15);
+  border: 1px solid rgba(76,175,80,0.35);
+  border-radius: 8px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.82rem;
+  color: #4caf50;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+// ── Panel de acciones ─────────────────────────────────────────────────────
+
+.actions-panel {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  min-height: 2.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.action-play    { background: #c9a227; color: #000; &:hover { background: #f0d060; } }
+.action-envido  { background: rgba(76,175,80,0.2); border: 1px solid #4caf50; color: #4caf50; &:hover { background: rgba(76,175,80,0.3); } }
+.action-truco   { background: rgba(229,57,53,0.2); border: 1px solid #e53935; color: #e53935; &:hover { background: rgba(229,57,53,0.3); } }
+.action-quiero  { background: #4caf50; color: #fff; &:hover { background: #43a047; } }
+.action-noquiero{ background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; &:hover { background: rgba(255,255,255,0.14); } }
+.action-mazo    { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #a0aec0; font-size: 0.78rem; &:hover { color: #fff; border-color: rgba(255,255,255,0.3); } }
+
+.pts-hint { font-size: 0.72rem; opacity: 0.7; }
+
+// ── Señas ─────────────────────────────────────────────────────────────────
+
+.senas-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(201,162,39,0.06);
+  border: 1px solid rgba(201,162,39,0.18);
+  border-radius: 10px;
+  padding: 0.4rem 0.75rem;
+}
+
+.senas-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #c9a227;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.senas-buttons {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.sena-btn {
+  background: rgba(201,162,39,0.1);
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 6px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.78rem;
+  color: #f0d060;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.15s;
+  &:hover { background: rgba(201,162,39,0.25); }
+  &:active { transform: scale(0.95); }
+}
+
+// ── Overlays ──────────────────────────────────────────────────────────────
+
+.hand-result-overlay {
+  position: fixed;
+  bottom: 6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 150;
+  animation: slideUp 0.3s ease;
+}
+
+.hr-inner {
+  background: #141416;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 1.25rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 220px;
+
+  &.won { border-color: rgba(201,162,39,0.5); }
+}
+
+.hr-title  { font-size: 1.1rem; font-weight: 800; color: #fff; }
+.hr-detail { font-size: 0.85rem; color: #a0aec0; }
+.hr-scores { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+.hr-chip   {
+  background: rgba(201,162,39,0.1);
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: 8px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8rem;
+  color: #c9a227;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.overlay-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+}
+
+.confirm-modal {
+  background: #141416;
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: 16px;
+  padding: 1.75rem;
+  max-width: 360px;
+  width: 90%;
+  display: flex; flex-direction: column; gap: 1rem;
+  h3 { margin: 0; color: #c9a227; }
+  p  { color: #a0aec0; font-size: 0.9rem; margin: 0; }
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  .btn { flex: 1; }
+}
+
+.btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; font-weight: 600; cursor: pointer; }
+.btn-danger  { background: #e53935; color: #fff; font-weight: 600; cursor: pointer; }
+.btn-primary { background: #c9a227; color: #000; font-weight: 700; cursor: pointer; }
+
+.finished-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  p { color: #a0aec0; }
+}

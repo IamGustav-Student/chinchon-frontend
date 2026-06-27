@@ -1,0 +1,271 @@
+<div class="truco-layout" [class.four-players]="gameState()?.maxPlayers === 4">
+
+  <!-- Header -->
+  <div class="truco-header">
+    <button class="btn-icon" (click)="confirmLeave()" title="Salir">←</button>
+
+    <div class="score-board">
+      <div class="team-score" [class.winning]="gameState() && gameState()!.teamScores[myTeam()] > gameState()!.teamScores[myTeam() === 0 ? 1 : 0]">
+        <span class="score-label">Nosotros</span>
+        <span class="score-value">{{ gameState()?.teamScores?.[myTeam()] ?? 0 }}</span>
+      </div>
+      <div class="score-divider">
+        <span class="score-limit">/ {{ gameState()?.pointLimit ?? 15 }}</span>
+      </div>
+      <div class="team-score" [class.winning]="gameState() && gameState()!.teamScores[myTeam() === 0 ? 1 : 0] > gameState()!.teamScores[myTeam()]">
+        <span class="score-label">Ellos</span>
+        <span class="score-value">{{ gameState() ? gameState()!.teamScores[myTeam() === 0 ? 1 : 0] : 0 }}</span>
+      </div>
+    </div>
+
+    <!-- Bazas de la mano actual -->
+    <div class="tricks-track">
+      @for (trick of (gameState()?.tricks ?? []); track $index) {
+        <div class="trick-dot" [class.us]="trick.winnerTeam === myTeam()" [class.them]="trick.winnerTeam !== null && trick.winnerTeam !== myTeam()" [class.tie]="trick.winnerTeam === null" [title]="trickWinnerName(trick)"></div>
+      }
+      @for (i of [].constructor(3 - (gameState()?.tricks?.length ?? 0)); track $index) {
+        <div class="trick-dot empty"></div>
+      }
+    </div>
+
+    <div class="header-right">
+      <button class="btn-icon" (click)="toggleMute()" [title]="muted() ? 'Activar sonido' : 'Silenciar'">
+        {{ muted() ? '🔇' : '🔊' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- SALA DE ESPERA -->
+  @if (!gameState() || gameState()!.status === 'waiting') {
+    <div class="waiting-room">
+      <div class="waiting-icon">🃏</div>
+      <h2>Esperando jugadores...</h2>
+      <p>Se necesitan {{ gameState()?.maxPlayers ?? 2 }} jugadores para empezar.</p>
+      <div class="waiting-players">
+        @for (p of (gameState()?.players ?? []); track p.id) {
+          <div class="waiting-player">
+            <span class="wp-avatar">{{ p.avatar }}</span>
+            <span>{{ p.username }}</span>
+            @if (p.teamIndex === 0) { <span class="team-chip team-0">Equipo A</span> }
+            @else { <span class="team-chip team-1">Equipo B</span> }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- MESA DE JUEGO -->
+  @if (gameState() && gameState()!.status === 'playing') {
+    <div class="felt-area">
+
+      <!-- Zona PARTNER (4 jugadores) -->
+      @if (partner()) {
+        <div class="partner-zone player-zone" [class.is-turn]="gameState()!.currentTurnId === partner()!.id">
+          <div class="player-info">
+            <span class="p-avatar">{{ partner()!.avatar }}</span>
+            <span class="p-name">{{ partner()!.username }}</span>
+            @if (partner()!.isMano) { <span class="mano-chip">Mano</span> }
+          </div>
+          <div class="opponent-cards">
+            @for (i of [].constructor(partner()!.cardCount); track $index) {
+              <app-card [faceDown]="true" />
+            }
+          </div>
+          @if (partner()!.lastAction) {
+            <div class="action-bubble">{{ actionLabel(partner()!.lastAction) }}</div>
+          }
+        </div>
+      }
+
+      <!-- Zona RIVALES -->
+      <div class="opponents-zone">
+        @for (opp of opponents(); track opp.id) {
+          <div class="opponent-zone player-zone" [class.is-turn]="gameState()!.currentTurnId === opp.id">
+            <div class="player-info">
+              <span class="p-avatar">{{ opp.avatar }}</span>
+              <span class="p-name">{{ opp.username }}</span>
+              @if (opp.isMano) { <span class="mano-chip">Mano</span> }
+            </div>
+            <div class="opponent-cards">
+              @for (i of [].constructor(opp.cardCount); track $index) {
+                <app-card [faceDown]="true" />
+              }
+            </div>
+            @if (opp.lastAction) {
+              <div class="action-bubble rival">{{ actionLabel(opp.lastAction) }}</div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Centro: cartas jugadas en la baza actual -->
+      <div class="center-felt">
+
+        <!-- Banner de desafío activo -->
+        @if (gameState()!.challenge) {
+          <div class="challenge-banner">
+            <span class="ch-label">{{ challengeLabel() }}</span>
+            <span class="ch-pts">{{ gameState()!.challenge!.pointsIfAccepted }} pts</span>
+          </div>
+        }
+
+        <!-- Cartas sobre la mesa (baza actual) -->
+        <div class="trick-cards">
+          @for (play of gameState()!.currentTrickPlays; track play.playerId) {
+            <div class="trick-play">
+              <app-card [suit]="play.card.suit" [value]="play.card.value" [faceDown]="false" />
+              <span class="play-name">{{ getPlayerById(play.playerId)?.username }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Mi zona -->
+      <div class="my-zone" [class.is-turn]="isMyTurn()">
+
+        <!-- Señas al compañero (solo 4 jugadores) -->
+        @if (partnerSignals().length > 0) {
+          <div class="senas-panel">
+            <span class="senas-title">Señas</span>
+            <div class="senas-buttons">
+              @for (s of partnerSignals(); track s.id) {
+                <button class="sena-btn" (click)="sendPartnerSignal(s.id)">{{ s.label }}</button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Mis cartas -->
+        <div class="my-cards">
+          @for (card of (gameState()!.myCards ?? []); track trackByIndex($index)) {
+            <div class="my-card-wrap" [class.played]="card.played" [class.selected]="selectedCard() === $index">
+              <app-card
+                [suit]="card.suit"
+                [value]="card.value"
+                [faceDown]="false"
+                [selected]="selectedCard() === $index"
+                [disabled]="card.played || !canPlayCard()"
+                (cardClick)="selectCard($index)"
+              />
+            </div>
+          }
+        </div>
+
+        <!-- Mi info -->
+        @if (me()) {
+          <div class="my-info-row">
+            <span class="p-avatar">{{ me()!.avatar }}</span>
+            <span class="my-name">Vos{{ me()!.isMano ? ' (Mano)' : '' }}</span>
+          </div>
+        }
+
+        <!-- Señal del compañero recibida -->
+        @if (partnerSignalMsg()) {
+          <div class="partner-signal-toast">
+            🤝 Compañero: <strong>{{ partnerSignalMsg() }}</strong>
+          </div>
+        }
+
+        <!-- Panel de acciones -->
+        <div class="actions-panel">
+
+          <!-- Jugar carta seleccionada -->
+          @if (canPlayCard() && selectedCard() !== null) {
+            <button class="btn action-play" (click)="playCard()">Jugar carta</button>
+          }
+
+          <!-- Envido (solo si fase abierta y es mi turno sin desafío) -->
+          @if (canCallEnvido()) {
+            <button class="btn action-envido" (click)="callEnvido()">Envido</button>
+            <button class="btn action-envido" (click)="callRealEnvido()">Real Envido</button>
+            <button class="btn action-envido" (click)="callFaltaEnvido()">Falta Envido</button>
+          }
+
+          <!-- Truco (mi turno sin desafío) -->
+          @if (canCallTruco()) {
+            <button class="btn action-truco" (click)="callTruco()">Truco</button>
+          }
+
+          <!-- Respuesta a desafío de ENVIDO -->
+          @if (canRespond() && gameState()!.challenge && ['envido','envido-envido','real-envido','falta-envido'].includes(gameState()!.challenge!.type)) {
+            <button class="btn action-quiero"   (click)="quiero()">Quiero</button>
+            <button class="btn action-noquiero" (click)="noQuiero()">No quiero <span class="pts-hint">({{ gameState()!.challenge!.pointsIfRejected }} pt)</span></button>
+            @if (canCallEnvidoEnvido()) {
+              <button class="btn action-envido" (click)="callEnvidoEnvido()">Envido</button>
+            }
+            @if (canCallRealEnvido()) {
+              <button class="btn action-envido" (click)="callRealEnvido()">Real Envido</button>
+            }
+            @if (canCallFaltaEnvido()) {
+              <button class="btn action-envido" (click)="callFaltaEnvido()">Falta Envido</button>
+            }
+          }
+
+          <!-- Respuesta a desafío de TRUCO -->
+          @if (canRespond() && gameState()!.challenge && ['truco','retruco','vale-cuatro'].includes(gameState()!.challenge!.type)) {
+            <button class="btn action-quiero"   (click)="quiero()">Quiero</button>
+            <button class="btn action-noquiero" (click)="noQuiero()">No quiero <span class="pts-hint">({{ gameState()!.challenge!.pointsIfRejected }} pt)</span></button>
+            @if (canCallRetruco()) {
+              <button class="btn action-truco" (click)="callRetruco()">Retruco</button>
+            }
+            @if (canCallValeCuatro()) {
+              <button class="btn action-truco" (click)="callValeCuatro()">Vale Cuatro</button>
+            }
+          }
+
+          <!-- Me voy al mazo -->
+          @if (canIrseAlMazo()) {
+            <button class="btn action-mazo" (click)="irseAlMazo()">Me voy al mazo</button>
+          }
+
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <!-- Partida terminada -->
+  @if (gameState()?.status === 'finished') {
+    <div class="finished-state">
+      <p>La partida terminó.</p>
+      <button class="btn btn-primary" (click)="leaveTable()">Volver al lobby</button>
+    </div>
+  }
+
+</div>
+
+<!-- Overlay resultado de mano -->
+@if (handResult()) {
+  <div class="hand-result-overlay">
+    <div class="hr-inner" [class.won]="handResult()!.winnerTeam === myTeam()">
+      @if (handResult()!.winnerTeam === myTeam()) {
+        <div class="hr-title">¡Ganaron la mano! 🎉</div>
+      } @else {
+        <div class="hr-title">Perdieron la mano</div>
+      }
+      <div class="hr-detail">{{ handResult()!.details }}</div>
+      <div class="hr-scores">
+        @if (handResult()!.trucoPoints > 0) {
+          <span class="hr-chip">Truco: {{ handResult()!.trucoPoints }} pts</span>
+        }
+        @if (handResult()!.envidoPoints > 0) {
+          <span class="hr-chip">Envido: {{ handResult()!.envidoPoints }} pts</span>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Confirmar salida -->
+@if (showLeaveConfirm()) {
+  <div class="overlay-backdrop">
+    <div class="confirm-modal">
+      <h3>Salir de la partida</h3>
+      <p>Si salís en medio de una mano se te contará como abandono.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline" (click)="cancelLeave()">Quedarme</button>
+        <button class="btn btn-danger"  (click)="leaveTable()">Salir</button>
+      </div>
+    </div>
+  </div>
+}
