@@ -1,5 +1,4 @@
-// Reemplazar RAILWAY_URL con la URL real una vez desplegado el backend
-const RAILWAY_URL = 'https://RAILWAY_URL_AQUI.up.railway.app';
+const RAILWAY_URL = 'https://backend-production-0e39.up.railway.app';
 
 export const environment = {
   production: true,
