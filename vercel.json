@@ -1,3 +1,5 @@
 {
+  "buildCommand": "npm run build:vercel",
+  "outputDirectory": "dist/chinchon-frontend/browser",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
