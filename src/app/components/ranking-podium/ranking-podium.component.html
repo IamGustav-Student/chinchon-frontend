@@ -3,7 +3,13 @@
     @if (top3[idx]) {
       <div class="podium-slot" [class.first]="idx === 0" [class.second]="idx === 1" [class.third]="idx === 2">
         <div class="medal">{{ MEDALS[idx] }}</div>
-        <div class="podium-avatar">{{ top3[idx].avatar }}</div>
+        <div class="podium-avatar">
+          @if (isCustomImage(top3[idx].avatar)) {
+            <img [src]="top3[idx].avatar" alt="avatar" class="podium-avatar-img" />
+          } @else {
+            {{ top3[idx].avatar }}
+          }
+        </div>
         <div class="podium-name">{{ top3[idx].username }}</div>
         <div class="podium-points">{{ top3[idx].points | number }} pts</div>
         <div class="podium-prize">${{ PRIZES[idx] | number }}</div>

@@ -1,5 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -14,6 +14,7 @@ import { WalletService } from '../../services/wallet.service';
 export class DashboardComponent implements OnInit {
   auth = inject(AuthService);
   private wallet = inject(WalletService);
+  private router = inject(Router);
 
   walletModal: 'deposit' | 'withdraw' | null = null;
   selectedAmount = signal(0);
@@ -31,7 +32,15 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  isCustomImage(avatar?: string | null): boolean {
+    return avatar ? avatar.length > 8 : false;
+  }
+
   openModal(type: 'deposit' | 'withdraw') {
+    if (type === 'deposit') {
+      this.router.navigate(['/profile'], { queryParams: { tab: 'deposit' } });
+      return;
+    }
     this.walletModal = type;
     this.selectedAmount.set(0);
     this.walletError.set('');

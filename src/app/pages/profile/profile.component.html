@@ -2,7 +2,13 @@
 
   <!-- Header del perfil -->
   <div class="profile-header">
-    <div class="avatar-current">{{ auth.currentUser()?.avatar }}</div>
+    <div class="avatar-current">
+      @if (isCustomImage(auth.currentUser()?.avatar)) {
+        <img [src]="auth.currentUser()?.avatar" alt="avatar" class="avatar-current-img" />
+      } @else {
+        {{ auth.currentUser()?.avatar ?? '👨' }}
+      }
+    </div>
     <div class="profile-meta">
       <div class="profile-username">{{ auth.currentUser()?.username }}</div>
       <div class="profile-email">{{ auth.currentUser()?.email }}</div>
@@ -26,46 +32,227 @@
     </div>
   </div>
 
-  <!-- Selector de avatar -->
-  <div class="avatar-section">
-    <h3>Cambiar avatar</h3>
-    <div class="avatars-grid">
-      @for (a of AVATARS; track a) {
-        <button
-          class="avatar-opt"
-          [class.selected]="selectedAvatar() === a"
-          (click)="selectAvatar(a)"
-        >{{ a }}</button>
-      }
-    </div>
-    <button
-      class="btn btn-primary"
-      style="align-self:flex-start"
-      (click)="saveAvatar()"
-      [disabled]="saveLoading() || selectedAvatar() === auth.currentUser()?.avatar"
-    >
-      {{ saveLoading() ? 'Guardando...' : 'Guardar avatar' }}
-    </button>
+  <!-- Navigation Tabs -->
+  <div class="profile-tabs flex gap-1">
+    <button class="tab-btn" [class.active]="activeTab() === 'avatar'" (click)="activeTab.set('avatar')">👤 Mi Avatar</button>
+    <button class="tab-btn" [class.active]="activeTab() === 'deposit'" (click)="activeTab.set('deposit')">💵 Depositar</button>
+    <button class="tab-btn" [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">📜 Movimientos</button>
   </div>
 
-  <!-- Historial de wallet -->
-  <div class="history-section">
-    <h3>Historial de movimientos</h3>
-    @if (history().length === 0) {
-      <p class="empty-history">No hay movimientos todavía.</p>
-    } @else {
-      <div class="history-list">
-        @for (mov of history(); track $index) {
-          <div class="history-item" [class]="mov.type">
-            <div>
-              <div class="h-type">{{ movementLabel(mov.type) }}</div>
-              <div class="h-date">{{ mov.created_at | date:'dd/MM/yyyy HH:mm' }}</div>
-            </div>
-            <div class="h-amount">${{ mov.amount | number }}</div>
-          </div>
+  <!-- TAB: AVATAR -->
+  @if (activeTab() === 'avatar') {
+    <div class="avatar-section panel">
+      <h3>Cambiar avatar</h3>
+      <p class="section-desc">Elegí uno de nuestros personajes predeterminados o subí tu propia foto de perfil.</p>
+      
+      <div class="avatars-grid">
+        @for (a of AVATARS; track a) {
+          <button
+            class="avatar-opt"
+            [class.selected]="selectedAvatar() === a"
+            (click)="selectAvatar(a)"
+          >{{ a }}</button>
         }
       </div>
-    }
-  </div>
+
+      <div class="custom-avatar-upload">
+        <label for="avatar-file" class="form-label" style="font-size: 0.9rem; color: #a0aec0;">O subí tu propia foto:</label>
+        <div class="upload-row flex gap-2 items-center mt-1">
+          <button type="button" class="btn btn-outline" (click)="fileInput.click()">
+            📷 Seleccionar imagen
+          </button>
+          <input
+            type="file"
+            id="avatar-file"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+            style="display: none;"
+            #fileInput
+          />
+          @if (customAvatarPreview()) {
+            <span class="upload-status text-muted" style="font-size: 0.85rem;">✓ Imagen cargada</span>
+          }
+        </div>
+      </div>
+
+      @if (isCustomImage(selectedAvatar())) {
+        <div class="custom-avatar-preview-container flex items-center gap-2 mt-2">
+          <span style="font-size: 0.9rem;">Vista previa avatar personalizado:</span>
+          <div class="avatar-opt selected" style="width: 56px; height: 56px; padding: 0;">
+            <img [src]="selectedAvatar()" alt="preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+          </div>
+        </div>
+      }
+
+      <button
+        class="btn btn-primary"
+        style="align-self:flex-start; margin-top: 1rem;"
+        (click)="saveAvatar()"
+        [disabled]="saveLoading() || selectedAvatar() === auth.currentUser()?.avatar"
+      >
+        {{ saveLoading() ? 'Guardando...' : 'Guardar avatar' }}
+      </button>
+    </div>
+  }
+
+  <!-- TAB: DEPOSIT -->
+  @if (activeTab() === 'deposit') {
+    <div class="deposit-section panel">
+      <h3>Cargar Saldo</h3>
+      <p class="section-desc" style="color: #a0aec0; font-size: 0.95rem;">Realizá una transferencia bancaria o desde cualquier billetera virtual y notificá tu pago para acreditarlo en tu cuenta.</p>
+
+      <!-- Instrucciones de CBU -->
+      <div class="transfer-info mt-2">
+        <div class="info-row">
+          <span class="info-label">Alias:</span>
+          <strong class="info-value text-gold">juegos.carta.mp</strong>
+        </div>
+        <div class="info-row">
+          <span class="info-label">CBU:</span>
+          <strong class="info-value text-gold">0000003100012345678901</strong>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Banco:</span>
+          <span class="info-value">Mercado Pago</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Titular:</span>
+          <span class="info-value">Juegos de Carta S.R.L.</span>
+        </div>
+      </div>
+
+      <!-- Alerta titular coincidente -->
+      <div class="deposit-warning-box">
+        <span class="warning-icon">⚠️</span>
+        <div class="warning-text">
+          <strong>IMPORTANTE:</strong> La cuenta bancaria o de billetera virtual desde la que realices la transferencia 
+          <strong>DEBE COINCIDIR EXACTAMENTE</strong> con el titular de esta cuenta de juego. 
+          No se acreditarán transferencias provenientes de cuentas de terceros.
+        </div>
+      </div>
+
+      <!-- Formulario de depósito -->
+      <form (ngSubmit)="submitDeposit()" class="deposit-form mt-3">
+        <div class="form-group">
+          <label for="dep-amount">Monto transferido ($)</label>
+          <input
+            id="dep-amount"
+            type="number"
+            [(ngModel)]="depositAmount"
+            name="depositAmount"
+            placeholder="Ej: 2000"
+            required
+          />
+        </div>
+
+        <div class="form-group mt-2">
+          <label for="dep-sender">Titular de la cuenta de origen (tu nombre completo)</label>
+          <input
+            id="dep-sender"
+            type="text"
+            [(ngModel)]="depositSenderName"
+            name="depositSenderName"
+            placeholder="Ej: Juan Pérez"
+            required
+          />
+        </div>
+
+        <div class="form-group mt-2">
+          <label for="dep-bank">Banco o billetera virtual de origen</label>
+          <input
+            id="dep-bank"
+            type="text"
+            [(ngModel)]="depositSenderBank"
+            name="depositSenderBank"
+            placeholder="Ej: Mercado Pago, Ualá, Banco Galicia"
+            required
+          />
+        </div>
+
+        <div class="form-group mt-2">
+          <label for="dep-tx">Número de comprobante / transacción</label>
+          <input
+            id="dep-tx"
+            type="text"
+            [(ngModel)]="depositTransactionId"
+            name="depositTransactionId"
+            placeholder="Ej: TX-12345678"
+            required
+          />
+        </div>
+
+        <div class="form-group-checkbox mt-2">
+          <input
+            id="dep-terms"
+            type="checkbox"
+            [(ngModel)]="depositAcceptTerms"
+            name="depositAcceptTerms"
+            required
+          />
+          <label for="dep-terms" style="margin-left: 0.5rem; font-size: 0.9rem; color: #a0aec0; cursor: pointer;">
+            Confirmo que el titular de la transferencia coincide exactamente con mi cuenta de juego.
+          </label>
+        </div>
+
+        @if (depositError()) {
+          <p class="error-msg mt-2">{{ depositError() }}</p>
+        }
+
+        @if (depositSuccess()) {
+          <div class="success-box mt-2">
+            <p style="color: #4caf50;"><strong>✓ ¡Depósito notificado con éxito!</strong></p>
+            <p style="font-size: 0.9rem; color: #a0aec0;">Será acreditado tras validar la titularidad de origen en pocos minutos.</p>
+            <a
+              [href]="getWhatsAppDepositLink()"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-primary mt-2"
+              style="background-color: #25d366; color: #fff;"
+            >
+              💬 Enviar comprobante por WhatsApp
+            </a>
+          </div>
+        }
+
+        <button
+          type="submit"
+          class="btn btn-primary mt-3"
+          [disabled]="depositLoading() || depositSuccess()"
+        >
+          {{ depositLoading() ? 'Enviando...' : 'Notificar Depósito' }}
+        </button>
+      </form>
+
+      <!-- Ayuda -->
+      <div class="deposit-help-footer mt-3" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem;">
+        <p class="text-muted" style="font-size: 0.9rem;">¿Tuviste algún problema? Escribinos directamente:</p>
+        <a href="https://wa.me/5491123456789" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm mt-2">
+          🟢 Soporte WhatsApp
+        </a>
+      </div>
+    </div>
+  }
+
+  <!-- TAB: HISTORY -->
+  @if (activeTab() === 'history') {
+    <div class="history-section panel">
+      <h3>Historial de movimientos</h3>
+      @if (history().length === 0) {
+        <p class="empty-history">No hay movimientos todavía.</p>
+      } @else {
+        <div class="history-list">
+          @for (mov of history(); track $index) {
+            <div class="history-item" [class]="mov.type">
+              <div>
+                <div class="h-type">{{ movementLabel(mov.type) }}</div>
+                <div class="h-date">{{ mov.created_at | date:'dd/MM/yyyy HH:mm' }}</div>
+              </div>
+              <div class="h-amount">${{ mov.amount | number }}</div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
 
 </div>

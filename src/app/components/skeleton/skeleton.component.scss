@@ -1,4 +1,4 @@
-$shimmer: linear-gradient(90deg, #1a2d6b 25%, #243a80 50%, #1a2d6b 75%);
+$shimmer: linear-gradient(90deg, #141416 25%, #1e1e22 50%, #141416 75%);
 
 @mixin shimmer {
   background: $shimmer;
@@ -26,7 +26,7 @@ $shimmer: linear-gradient(90deg, #1a2d6b 25%, #243a80 50%, #1a2d6b 75%);
 
 // Tarjeta de mesa skeleton
 .sk-card {
-  background: #1a2d6b;
+  background: #141416;
   border: 1px solid rgba(201,162,39,0.1);
   border-radius: 16px;
   padding: 1.25rem;

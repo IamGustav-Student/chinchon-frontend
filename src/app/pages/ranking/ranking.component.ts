@@ -62,4 +62,8 @@ export class RankingComponent implements OnInit, OnDestroy {
     const uid = this.auth.currentUser()?.id;
     return this.ranking().findIndex(r => r.id === uid) + 1;
   }
+
+  isCustomImage(avatar?: string | null): boolean {
+    return avatar ? avatar.length > 8 : false;
+  }
 }

@@ -2,7 +2,13 @@
 
   <!-- Tarjeta del usuario -->
   <div class="user-card">
-    <div class="avatar">{{ auth.currentUser()?.avatar ?? '🎴' }}</div>
+    <div class="avatar">
+      @if (isCustomImage(auth.currentUser()?.avatar)) {
+        <img [src]="auth.currentUser()?.avatar" alt="avatar" class="avatar-img" />
+      } @else {
+        {{ auth.currentUser()?.avatar ?? '👨' }}
+      }
+    </div>
     <div class="user-info">
       <div class="username">{{ auth.currentUser()?.username }}</div>
       <div class="balance-label">Saldo disponible</div>

@@ -36,7 +36,11 @@
           </div>
 
           <div class="player-cell">
-            <span style="font-size:1.4rem">{{ entry.avatar }}</span>
+            @if (isCustomImage(entry.avatar)) {
+              <img [src]="entry.avatar" alt="avatar" class="ranking-avatar-img" />
+            } @else {
+              <span style="font-size:1.4rem">{{ entry.avatar }}</span>
+            }
             <span class="player-name">{{ entry.username }}</span>
           </div>
 

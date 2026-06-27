@@ -14,7 +14,7 @@
 }
 
 .rule-card {
-  background: #1a2d6b;
+  background: #141416;
   border: 1px solid rgba(201,162,39,0.15);
   border-radius: 16px;
   padding: 1.5rem;
@@ -24,7 +24,7 @@
 
   &.highlight {
     border-color: rgba(201,162,39,0.4);
-    background: linear-gradient(135deg, #1a2d6b, #243a80);
+    background: linear-gradient(135deg, #141416, #1e1e22);
   }
 }
 

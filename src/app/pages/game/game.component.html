@@ -5,7 +5,7 @@
     <button class="btn-icon" (click)="confirmLeave()" title="Salir">←</button>
     <div class="game-meta">
       <span class="round-badge">Ronda {{ gameState()?.round ?? '—' }}</span>
-      <span class="bet-badge">Apuesta: ${{ gameState()?.bet | number }}</span>
+      <span class="bet-badge">Apuesta: @if (gameState()?.bet === 0) { Gratis } @else { ${{ gameState()?.bet | number }} }</span>
       <span class="limit-badge">Límite: {{ gameState()?.pointLimit }} pts</span>
     </div>
     <div class="header-right">

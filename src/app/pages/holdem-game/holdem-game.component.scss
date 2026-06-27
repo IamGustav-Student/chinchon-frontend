@@ -3,7 +3,7 @@ $felt-dark: #0f3d1e;
 $felt-border: rgba(255,255,255,0.08);
 $gold: #c9a227;
 $gold-light: #f0d060;
-$surface: #1a2d6b;
+$surface: #141416;
 
 .holdem-layout {
   display: flex;
@@ -269,11 +269,11 @@ $surface: #1a2d6b;
 .action-fold  { background: #b71c1c; color: #fff; &:hover { background: #c62828; } }
 .action-check { background: #1565c0; color: #fff; &:hover { background: #1976d2; } }
 .action-call  { background: #1565c0; color: #fff; &:hover { background: #1976d2; } }
-.action-raise { background: linear-gradient(135deg, $gold, $gold-light); color: #0d1b4b; &:hover { filter: brightness(1.1); } }
-.action-raise-confirm { background: linear-gradient(135deg, $gold, $gold-light); color: #0d1b4b; &:hover { filter: brightness(1.1); } }
+.action-raise { background: linear-gradient(135deg, $gold, $gold-light); color: #0c0c0e; &:hover { filter: brightness(1.1); } }
+.action-raise-confirm { background: linear-gradient(135deg, $gold, $gold-light); color: #0c0c0e; &:hover { filter: brightness(1.1); } }
 .action-allin { background: #e53935; color: #fff; font-size: 0.8rem; &:hover { background: #c62828; } }
 .action-cancel { background: rgba(255,255,255,0.1); color: #fff; padding: 0.5rem 0.65rem; }
-.btn-primary  { background: $gold; color: #0d1b4b; &:hover { background: $gold-light; } }
+.btn-primary  { background: $gold; color: #0c0c0e; &:hover { background: $gold-light; } }
 .btn-outline  { background: transparent; border: 2px solid $gold; color: $gold; &:hover { background: rgba($gold,0.1); } }
 .btn-danger   { background: #e53935; color: #fff; &:hover { background: #c62828; } }
 

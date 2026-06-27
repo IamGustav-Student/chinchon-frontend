@@ -27,7 +27,7 @@
 
 // Podio
 .podium-wrapper {
-  background: linear-gradient(135deg, #1a2d6b, #243a80);
+  background: linear-gradient(135deg, #141416, #1e1e22);
   border-radius: 20px;
   padding: 2rem;
   border: 1px solid rgba(201,162,39,0.15);
@@ -35,7 +35,7 @@
 
 // Tabla Top 10
 .ranking-table {
-  background: #1a2d6b;
+  background: #141416;
   border-radius: 16px;
   border: 1px solid rgba(201,162,39,0.15);
   overflow: hidden;
@@ -45,7 +45,7 @@
     grid-template-columns: 3rem 1fr auto auto;
     gap: 1rem;
     padding: 0.75rem 1.25rem;
-    background: #243a80;
+    background: #1e1e22;
     font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -72,7 +72,7 @@
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background: #243a80;
+  background: #1e1e22;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,6 +91,14 @@
   gap: 0.75rem;
 
   .player-name { font-weight: 600; font-size: 0.95rem; }
+
+  .ranking-avatar-img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
 }
 
 .points-cell { font-weight: 700; color: #c9a227; text-align: right; }
@@ -101,7 +109,7 @@
   padding: 1rem;
   color: #a0aec0;
   font-size: 0.9rem;
-  background: #1a2d6b;
+  background: #141416;
   border-radius: 12px;
   border: 1px solid rgba(201,162,39,0.1);
 }

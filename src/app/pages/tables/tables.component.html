@@ -78,7 +78,7 @@
         <div class="options-row">
           @for (bet of BETS; track bet) {
             <button class="opt-btn" [class.selected]="selectedBet() === bet" (click)="selectedBet.set(bet)">
-              ${{ bet | number }}
+              @if (bet === 0) { Gratis } @else { ${{ bet | number }} }
             </button>
           }
         </div>

@@ -188,7 +188,13 @@
               >
                 @for (player of match.players; track player.id) {
                   <div class="bracket-player" [class.winner]="match.winnerId === player.id">
-                    <span class="bp-avatar">{{ player.avatar }}</span>
+                    <span class="bp-avatar">
+                      @if (isCustomImage(player.avatar)) {
+                        <img [src]="player.avatar" alt="avatar" class="bp-avatar-img" />
+                      } @else {
+                        {{ player.avatar }}
+                      }
+                    </span>
                     <span class="bp-name">{{ player.username }}</span>
                     @if (match.winnerId === player.id) {
                       <span class="bp-crown">👑</span>

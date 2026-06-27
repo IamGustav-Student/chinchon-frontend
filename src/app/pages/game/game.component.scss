@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: calc(100vh - 56px); // descontando navbar
-  background: radial-gradient(ellipse at center, #1a2d6b 0%, #0d1b4b 100%);
+  background: radial-gradient(ellipse at center, #141416 0%, #0c0c0e 100%);
   overflow: hidden;
   position: relative;
 }
@@ -145,7 +145,7 @@
   width: 28px;
   height: 42px;
   border-radius: 4px;
-  background: linear-gradient(135deg, #1a2d6b, #243a80);
+  background: linear-gradient(135deg, #141416, #1e1e22);
   border: 1px solid rgba(201,162,39,0.3);
   margin-left: -6px;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
@@ -180,7 +180,7 @@
   width: 70px;
   height: 105px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #1a2d6b, #243a80);
+  background: linear-gradient(135deg, #141416, #1e1e22);
   border: 2px solid rgba(201,162,39,0.3);
   display: flex;
   flex-direction: column;
@@ -244,7 +244,7 @@
 
 .btn-gold {
   background: linear-gradient(135deg, #c9a227, #f0d060);
-  color: #0d1b4b;
+  color: #0c0c0e;
   border: none;
   border-radius: 8px;
   padding: 0.4rem 1rem;
@@ -313,7 +313,7 @@
 }
 
 .overlay-card {
-  background: #1a2d6b;
+  background: #141416;
   border: 1px solid rgba(201,162,39,0.3);
   border-radius: 24px;
   padding: 2.5rem 2rem;
@@ -342,7 +342,7 @@
 .score-row {
   display: flex;
   justify-content: space-between;
-  background: #243a80;
+  background: #1e1e22;
   border-radius: 10px;
   padding: 0.6rem 1rem;
   font-size: 0.9rem;

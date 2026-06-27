@@ -30,7 +30,7 @@ export class TablesComponent implements OnInit {
   selectedMaxPlayers = signal(2);
   selectedPointLimit = signal(100);
 
-  readonly BETS = [500, 1000, 2500, 5000, 10000];
+  readonly BETS = [0, 500, 1000, 2500, 5000, 10000];
   readonly PLAYER_OPTIONS = [2, 4];
   readonly POINT_LIMITS = [50, 100];
 

@@ -41,6 +41,10 @@ export class TournamentComponent implements OnInit, OnDestroy {
 
   get myId() { return this.auth.currentUser()?.id ?? 0; }
 
+  isCustomImage(avatar?: string | null): boolean {
+    return avatar ? avatar.length > 8 : false;
+  }
+
   // Matches del round actual
   currentMatches = computed(() =>
     (this.bracket()?.matches ?? []).filter(m => m.round === this.bracket()!.currentRound)

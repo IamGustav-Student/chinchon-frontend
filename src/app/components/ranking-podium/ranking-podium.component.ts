@@ -15,4 +15,8 @@ export class RankingPodiumComponent {
   readonly MEDALS = ['🥇', '🥈', '🥉'];
   // Orden visual: 2°, 1°, 3°
   readonly ORDER = [1, 0, 2];
+
+  isCustomImage(avatar?: string | null): boolean {
+    return avatar ? avatar.length > 8 : false;
+  }
 }

@@ -1,5 +1,11 @@
 <div class="avatar-wrap" [class.turn]="isCurrentTurn" [class]="size">
-  <div class="avatar-icon">{{ avatar }}</div>
+  <div class="avatar-icon">
+    @if (isCustomImage(avatar)) {
+      <img [src]="avatar" alt="avatar" class="avatar-img" />
+    } @else {
+      {{ avatar }}
+    }
+  </div>
   @if (isCurrentTurn) {
     <span class="turn-dot"></span>
   }

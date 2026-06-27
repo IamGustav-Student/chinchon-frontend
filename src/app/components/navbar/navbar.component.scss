@@ -3,7 +3,7 @@
   align-items: center;
   gap: 2rem;
   padding: 0.75rem 2rem;
-  background: #0a1540;
+  background: #08080a;
   border-bottom: 1px solid rgba(201, 162, 39, 0.2);
   position: sticky;
   top: 0;
@@ -59,6 +59,13 @@
   &.active, &:hover {
     background: rgba(201,162,39,0.15) !important;
     color: #f0d060 !important;
+  }
+}
+
+.nav-help {
+  &:hover {
+    color: #25d366 !important;
+    background: rgba(37, 211, 102, 0.1) !important;
   }
 }
 
