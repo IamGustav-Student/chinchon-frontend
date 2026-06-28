@@ -38,16 +38,24 @@
   <!-- SALA DE ESPERA -->
   @if (!gameState() || gameState()!.status === 'waiting') {
     <div class="waiting-room">
-      <div class="waiting-icon">🃏</div>
-      <h2>Esperando jugadores...</h2>
-      <p>Se necesitan {{ gameState()?.maxPlayers ?? 2 }} jugadores para empezar.</p>
+      <div class="spinner-ring"></div>
+      <h2>Esperando jugadores</h2>
+      <p>Se necesitan <strong>{{ gameState()?.maxPlayers ?? 2 }}</strong> para empezar. Compartí el enlace o esperá que alguien entre.</p>
       <div class="waiting-players">
         @for (p of (gameState()?.players ?? []); track p.id) {
-          <div class="waiting-player">
+          <div class="waiting-player connected">
+            <span class="wp-dot"></span>
             <span class="wp-avatar">{{ p.avatar }}</span>
             <span>{{ p.username }}</span>
-            @if (p.teamIndex === 0) { <span class="team-chip team-0">Equipo A</span> }
-            @else { <span class="team-chip team-1">Equipo B</span> }
+            @if (p.teamIndex === 0) { <span class="team-chip team-0">A</span> }
+            @else { <span class="team-chip team-1">B</span> }
+          </div>
+        }
+        @for (i of [].constructor((gameState()?.maxPlayers ?? 2) - (gameState()?.players?.length ?? 0)); track $index) {
+          <div class="waiting-player empty">
+            <span class="wp-dot empty"></span>
+            <span class="wp-avatar">?</span>
+            <span>Esperando...</span>
           </div>
         }
       </div>
@@ -62,7 +70,7 @@
       @if (partner()) {
         <div class="partner-zone player-zone" [class.is-turn]="gameState()!.currentTurnId === partner()!.id">
           <div class="player-info">
-            <span class="p-avatar">{{ partner()!.avatar }}</span>
+            <span class="p-avatar clickable" (click)="openPlayerMenu(partner()!)">{{ partner()!.avatar }}</span>
             <span class="p-name">{{ partner()!.username }}</span>
             @if (partner()!.isMano) { <span class="mano-chip">Mano</span> }
           </div>
@@ -82,7 +90,7 @@
         @for (opp of opponents(); track opp.id) {
           <div class="opponent-zone player-zone" [class.is-turn]="gameState()!.currentTurnId === opp.id">
             <div class="player-info">
-              <span class="p-avatar">{{ opp.avatar }}</span>
+              <span class="p-avatar clickable" (click)="openPlayerMenu(opp)">{{ opp.avatar }}</span>
               <span class="p-name">{{ opp.username }}</span>
               @if (opp.isMano) { <span class="mano-chip">Mano</span> }
             </div>
@@ -254,6 +262,11 @@
       </div>
     </div>
   </div>
+}
+
+<!-- Menú de jugador -->
+@if (menuTarget()) {
+  <app-player-menu [target]="menuTarget()!" (close)="closePlayerMenu()" />
 }
 
 <!-- Confirmar salida -->

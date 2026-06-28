@@ -347,6 +347,33 @@
   strong { color: #ef9a9a; }
 }
 
+// ─── LISTA DE INSCRIPTOS ──────────────────────────────────────────────────
+.registered-list {
+  margin-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 0.75rem;
+}
+
+.registered-list-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a0aec0;
+  margin-bottom: 0.5rem;
+}
+
+.registered-player {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.9rem;
+  .rp-avatar { font-size: 1.1rem; }
+  .rp-name   { color: #fff; }
+}
+
 // ─── RESPONSIVE ───────────────────────────────────────────────────────────
 @media (max-width: 700px) {
   .t-grid          { grid-template-columns: 1fr; }

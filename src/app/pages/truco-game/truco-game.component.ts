@@ -1,12 +1,12 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DecimalPipe } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { ToastService } from '../../services/toast.service';
 import { AudioService } from '../../services/audio.service';
 import { CardComponent } from '../../components/card/card.component';
+import { PlayerMenuComponent, PlayerMenuTarget } from '../../components/player-menu/player-menu.component';
 import { WsMessage } from '../../services/websocket.service';
 import {
   TrucoGameState, TrucoCard, TrucoPlayerState, TrucoHandResult, TrucoTrick,
@@ -39,7 +39,7 @@ const PARTNER_SIGNAL_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-truco-game',
-  imports: [CardComponent, DecimalPipe],
+  imports: [CardComponent, PlayerMenuComponent],
   templateUrl: './truco-game.component.html',
   styleUrl: './truco-game.component.scss',
 })
@@ -60,6 +60,7 @@ export class TrucoGameComponent implements OnInit, OnDestroy {
   selectedCard      = signal<number | null>(null);
   muted             = signal(false);
   showLeaveConfirm  = signal(false);
+  menuTarget        = signal<PlayerMenuTarget | null>(null);
 
   // ── Derived ──────────────────────────────────────────────────────────────
 
@@ -324,4 +325,10 @@ export class TrucoGameComponent implements OnInit, OnDestroy {
   }
 
   trackByIndex(index: number): number { return index; }
+
+  openPlayerMenu(p: TrucoPlayerState) {
+    this.menuTarget.set({ id: p.id, username: p.username, avatar: p.avatar });
+  }
+
+  closePlayerMenu() { this.menuTarget.set(null); }
 }

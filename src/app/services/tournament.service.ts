@@ -16,6 +16,7 @@ export interface TournamentInfo {
   prizePool: number;
   winnerPrize: number;
   finalistPrize: number;
+  registeredPlayers?: { id: number; username: string; avatar: string }[];
 }
 
 export interface BracketMatch {

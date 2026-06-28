@@ -1,0 +1,34 @@
+<div class="player-menu-backdrop" (click)="close.emit()"></div>
+
+<div class="player-menu-popup">
+  <div class="pm-header">
+    <span class="pm-avatar">{{ target.avatar }}</span>
+    <span class="pm-name">{{ target.username }}</span>
+    <button class="pm-close" (click)="close.emit()">✕</button>
+  </div>
+
+  @if (!composing()) {
+    <div class="pm-actions">
+      <button class="pm-btn" (click)="visitProfile()">👤 Visitar perfil</button>
+      <button class="pm-btn" (click)="addFriend()">➕ Agregar amigo</button>
+      <button class="pm-btn" (click)="openCompose()">✉️ Enviar mensaje</button>
+    </div>
+  } @else {
+    <div class="pm-compose">
+      <textarea
+        class="pm-textarea"
+        placeholder="Escribí tu mensaje..."
+        rows="4"
+        maxlength="500"
+        [ngModel]="messageText()"
+        (ngModelChange)="messageText.set($event)"
+      ></textarea>
+      <div class="pm-compose-actions">
+        <button class="btn btn-outline pm-btn-sm" (click)="cancelCompose()">Cancelar</button>
+        <button class="btn btn-primary pm-btn-sm" (click)="sendMessage()" [disabled]="sendingMsg() || !messageText().trim()">
+          {{ sendingMsg() ? 'Enviando...' : 'Enviar' }}
+        </button>
+      </div>
+    </div>
+  }
+</div>

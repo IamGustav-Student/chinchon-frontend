@@ -63,7 +63,10 @@ export class TrucoComponent implements OnInit {
       },
       error: err => {
         this.createLoading.set(false);
-        this.toast.error(err.error?.error ?? 'No se pudo crear la mesa.');
+        const msg = err.status === 404
+          ? 'El servidor de Truco aún no está activo. Volvé pronto.'
+          : (err.error?.error ?? 'No se pudo crear la mesa.');
+        this.toast.error(msg);
       },
     });
   }

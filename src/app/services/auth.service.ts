@@ -9,6 +9,7 @@ export interface User {
   email: string;
   avatar: string;
   balance: number;
+  bio?: string;
 }
 
 @Injectable({ providedIn: 'root' })

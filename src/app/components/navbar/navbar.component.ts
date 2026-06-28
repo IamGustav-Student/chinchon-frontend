@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { InboxService } from '../../services/inbox.service';
 
 @Component({
   selector: 'app-navbar',
@@ -9,9 +10,16 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
-export class NavbarComponent {
-  auth = inject(AuthService);
+export class NavbarComponent implements OnInit {
+  auth   = inject(AuthService);
+  inbox  = inject(InboxService);
   private router = inject(Router);
+
+  ngOnInit() {
+    if (this.auth.isLoggedIn()) {
+      this.inbox.fetchUnread();
+    }
+  }
 
   logout() {
     this.auth.logout();

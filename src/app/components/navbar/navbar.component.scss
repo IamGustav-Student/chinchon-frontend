@@ -69,6 +69,30 @@
   }
 }
 
+.nav-inbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.inbox-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #e53935;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+}
+
 @media (max-width: 700px) {
   .navbar { padding: 0.75rem 1rem; gap: 1rem; }
   .navbar-links { gap: 0; }

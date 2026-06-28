@@ -1,0 +1,81 @@
+<div class="inbox-page page-container">
+
+  <div class="inbox-header">
+    <h2>Mensajes</h2>
+    @if (unreadCount() > 0) {
+      <span class="unread-badge">{{ unreadCount() }} sin leer</span>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="inbox-loading">Cargando mensajes...</div>
+  }
+
+  @if (!loading() && messages().length === 0) {
+    <div class="empty-inbox panel">
+      <p>No tenés mensajes todavía. Los mensajes de otros jugadores aparecerán acá.</p>
+    </div>
+  }
+
+  @if (!loading() && messages().length > 0) {
+    <div class="inbox-layout">
+
+      <!-- Lista de mensajes -->
+      <div class="message-list">
+        @for (msg of messages(); track msg.id) {
+          <div class="message-row" [class.unread]="!msg.read" [class.active]="selected()?.id === msg.id" (click)="openMessage(msg)">
+            <div class="msg-avatar">
+              @if (isCustomImage(msg.senderAvatar)) {
+                <img [src]="msg.senderAvatar" alt="avatar" />
+              } @else {
+                {{ msg.senderAvatar || '👤' }}
+              }
+            </div>
+            <div class="msg-info">
+              <div class="msg-sender">{{ msg.senderUsername }}</div>
+              <div class="msg-preview">{{ msg.body | slice:0:60 }}{{ msg.body.length > 60 ? '...' : '' }}</div>
+            </div>
+            <div class="msg-meta">
+              <div class="msg-date">{{ msg.createdAt | date:'dd/MM' }}</div>
+              @if (!msg.read) { <div class="unread-dot"></div> }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Vista del mensaje seleccionado -->
+      @if (selected()) {
+        <div class="message-thread panel">
+          <div class="thread-header">
+            <button class="btn-back" (click)="closeThread()">←</button>
+            <div class="thread-from">
+              <span class="th-avatar">{{ selected()!.senderAvatar }}</span>
+              <span class="th-name">{{ selected()!.senderUsername }}</span>
+            </div>
+          </div>
+
+          <div class="thread-body">
+            <p class="thread-text">{{ selected()!.body }}</p>
+            <span class="thread-date">{{ selected()!.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+
+          <div class="reply-box">
+            <textarea
+              class="reply-input"
+              placeholder="Escribí tu respuesta..."
+              rows="3"
+              maxlength="500"
+              [ngModel]="replyText()"
+              (ngModelChange)="replyText.set($event)"
+            ></textarea>
+            <button class="btn btn-primary" (click)="sendReply()" [disabled]="sendingReply() || !replyText().trim()">
+              {{ sendingReply() ? 'Enviando...' : 'Responder' }}
+            </button>
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

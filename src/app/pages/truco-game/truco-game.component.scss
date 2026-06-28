@@ -80,20 +80,29 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.25rem;
   padding: 2rem;
   text-align: center;
 
-  .waiting-icon { font-size: 3rem; }
-  h2 { color: #c9a227; }
-  p  { color: #a0aec0; }
+  h2 { color: #c9a227; margin: 0; }
+  p  { color: #a0aec0; font-size: 0.9rem; max-width: 280px; }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.spinner-ring {
+  width: 56px;
+  height: 56px;
+  border: 4px solid rgba(201,162,39,0.15);
+  border-top-color: #c9a227;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 .waiting-players {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-top: 0.5rem;
   width: 100%;
   max-width: 320px;
 }
@@ -101,13 +110,32 @@
 .waiting-player {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   background: #141416;
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
   font-size: 0.9rem;
   .wp-avatar { font-size: 1.2rem; }
+
+  &.empty {
+    opacity: 0.4;
+    border-style: dashed;
+    animation: pulse-fade 1.5s ease-in-out infinite;
+  }
+}
+
+.wp-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #4caf50;
+  flex-shrink: 0;
+  &.empty { background: #a0aec0; animation: pulse-fade 1.5s ease-in-out infinite; }
+}
+
+@keyframes pulse-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 .team-chip {
@@ -119,6 +147,8 @@
   &.team-0 { background: rgba(201,162,39,0.15); color: #c9a227; }
   &.team-1 { background: rgba(229,57,53,0.15);  color: #e53935; }
 }
+
+.clickable { cursor: pointer; &:hover { opacity: 0.8; transform: scale(1.1); } }
 
 // ── Mesa de juego ─────────────────────────────────────────────────────────
 

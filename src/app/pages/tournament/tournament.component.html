@@ -135,6 +135,18 @@
             ></div>
           </div>
         </div>
+
+        @if (info()!.status === 'registration_open' && info()!.registeredPlayers?.length) {
+          <div class="registered-list">
+            <div class="registered-list-title">Inscriptos</div>
+            @for (p of info()!.registeredPlayers!; track p.id) {
+              <div class="registered-player">
+                <span class="rp-avatar">{{ p.avatar }}</span>
+                <span class="rp-name">{{ p.username }}</span>
+              </div>
+            }
+          </div>
+        }
       </div>
 
     </div>

@@ -65,5 +65,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/truco-game/truco-game.component').then(m => m.TrucoGameComponent),
     canActivate: [authGuard],
   },
+  {
+    path: 'inbox',
+    loadComponent: () => import('./pages/inbox/inbox.component').then(m => m.InboxComponent),
+    canActivate: [authGuard],
+  },
   { path: '**', redirectTo: '/dashboard' },
 ];
