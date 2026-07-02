@@ -7,8 +7,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  padding: 1rem 0;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
 }
 
 // ── Progress ring header ──────────────────────────────────────────────────
@@ -51,11 +51,12 @@
 }
 
 // ── Table scene ──────────────────────────────────────────────────────────
+// min() thirds: max design size | screen width | back-calc from available height
+// 220px = navbar(56) + game-header(55) + wt-header(80) + gaps/padding(29)
 .table-scene {
   position: relative;
-  width: min(660px, 92vw);
-  height: min(470px, 62vh);
-  flex-shrink: 0;
+  width: min(760px, 92vw, calc((100vh - 220px) * 660 / 470));
+  aspect-ratio: 660 / 470;
 }
 
 // ── Felt oval ────────────────────────────────────────────────────────────
