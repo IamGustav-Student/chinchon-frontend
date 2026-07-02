@@ -10,7 +10,7 @@ import { PlayerMenuComponent, PlayerMenuTarget } from '../../components/player-m
 import { WaitingTableComponent, WaitingSeat } from '../../components/waiting-table/waiting-table.component';
 import { WsMessage } from '../../services/websocket.service';
 import {
-  TrucoGameState, TrucoCard, TrucoPlayerState, TrucoHandResult, TrucoTrick,
+  TrucoService, TrucoGameState, TrucoCard, TrucoPlayerState, TrucoHandResult, TrucoTrick,
 } from '../../services/truco.service';
 
 export interface PartnerSignal { id: string; label: string; }
@@ -45,12 +45,13 @@ const PARTNER_SIGNAL_LABELS: Record<string, string> = {
   styleUrl: './truco-game.component.scss',
 })
 export class TrucoGameComponent implements OnInit, OnDestroy {
-  private route  = inject(ActivatedRoute);
-  private router = inject(Router);
-  private ws     = inject(WebsocketService);
-  private toast  = inject(ToastService);
-  private audio  = inject(AudioService);
-  auth           = inject(AuthService);
+  private route    = inject(ActivatedRoute);
+  private router   = inject(Router);
+  private ws       = inject(WebsocketService);
+  private toast    = inject(ToastService);
+  private audio    = inject(AudioService);
+  private trucoSvc = inject(TrucoService);
+  auth             = inject(AuthService);
 
   private sub!: Subscription;
   private tableId = '';
@@ -91,14 +92,23 @@ export class TrucoGameComponent implements OnInit, OnDestroy {
     const players = this.gameState()?.players ?? [];
     const total   = this.gameState()?.maxPlayers ?? 2;
     const myId    = this.myId();
-    const filled: WaitingSeat[] = players.map(p => ({
+    const me      = this.auth.currentUser();
+
+    const includesMe = players.some(p => p.id === myId);
+    const list = includesMe
+      ? [...players].sort((a, _b) => (a.id === myId ? -1 : 1))
+      : [{ id: myId, username: me?.username ?? '?', avatar: me?.avatar || '🎴',
+           teamIndex: 0 as const, seatIndex: 0, isMano: false,
+           cardCount: 0, cardPlayed: null, lastAction: null }, ...players];
+
+    const filled: WaitingSeat[] = list.map(p => ({
       username: p.username,
       avatar: p.avatar || '🎴',
       isMe: p.id === myId,
       isEmpty: false,
       sub: p.teamIndex === 0 ? 'Equipo A' : 'Equipo B',
     }));
-    const empty: WaitingSeat[] = Array.from({ length: total - filled.length }, () => ({
+    const empty: WaitingSeat[] = Array.from({ length: Math.max(0, total - filled.length) }, () => ({
       username: '',
       avatar: '',
       isMe: false,
@@ -335,7 +345,12 @@ export class TrucoGameComponent implements OnInit, OnDestroy {
 
   confirmLeave()  { this.showLeaveConfirm.set(true); }
   cancelLeave()   { this.showLeaveConfirm.set(false); }
-  leaveTable()    { this.router.navigate(['/truco']); }
+  leaveTable() {
+    if (this.gameState()?.status === 'waiting' || !this.gameState()) {
+      this.trucoSvc.leaveTable(this.tableId).subscribe({ error: () => {} });
+    }
+    this.router.navigate(['/truco']);
+  }
   toggleMute()    { this.muted.set(this.audio.toggleMute()); }
 
   // ── Helpers (usados en template, no pueden ser arrow functions) ──────────

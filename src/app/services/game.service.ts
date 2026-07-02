@@ -32,4 +32,8 @@ export class GameService {
   getTable(id: string) {
     return this.http.get<TableSummary>(`${this.API}/${id}`);
   }
+
+  leaveTable(id: string) {
+    return this.http.post(`${this.API}/leave/${id}`, {});
+  }
 }

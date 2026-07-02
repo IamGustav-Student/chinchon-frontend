@@ -25,8 +25,8 @@
       <div class="seat-chip"
            [class.occupied]="!seat.isEmpty"
            [class.mine]="seat.isMe && !seat.isEmpty"
-           [style.left.px]="seat.x"
-           [style.top.px]="seat.y">
+           [style.left.%]="seat.xPct"
+           [style.top.%]="seat.yPct">
         @if (!seat.isEmpty) {
           <div class="seat-avatar">{{ seat.avatar }}</div>
           <div class="seat-name">{{ seat.username }}</div>

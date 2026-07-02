@@ -17,9 +17,9 @@ export class WaitingTableComponent {
   @Input() seats: WaitingSeat[] = [];
   @Input() gameName = '';
 
-  // Scene dimensions (px) — must match SCSS .table-scene width/height
-  private readonly W = 360;
-  private readonly H = 260;
+  // Orbit radii as percentage of scene (50% = center, measured from center outward)
+  private readonly RX_PCT = 38;
+  private readonly RY_PCT = 38;
 
   get seatedCount(): number {
     return this.seats.filter(s => !s.isEmpty).length;
@@ -36,24 +36,18 @@ export class WaitingTableComponent {
     return `${circ * pct} ${circ}`;
   }
 
-  get circumference(): number {
-    return 2 * Math.PI * 22;
-  }
-
-  seatsWithPos(): (WaitingSeat & { x: number; y: number })[] {
+  // Returns positions as percentages so the layout scales with the scene CSS size
+  seatsWithPos(): (WaitingSeat & { xPct: number; yPct: number })[] {
     const total = this.totalSeats;
     if (!total) return [];
-    const cx = this.W / 2;
-    const cy = this.H / 2;
-    const rx = cx - 52;
-    const ry = cy - 38;
     return this.seats.map((seat, i) => {
-      const deg = (270 + (360 / total) * i) % 360;
+      // Start at 90° (bottom = me) and go clockwise
+      const deg = (90 + (360 / total) * i) % 360;
       const rad = deg * Math.PI / 180;
       return {
         ...seat,
-        x: cx + rx * Math.cos(rad),
-        y: cy + ry * Math.sin(rad),
+        xPct: 50 + this.RX_PCT * Math.cos(rad),
+        yPct: 50 + this.RY_PCT * Math.sin(rad),
       };
     });
   }

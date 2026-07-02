@@ -36,4 +36,8 @@ export class HoldemService {
   rebuy(id: string) {
     return this.http.post<{ ok: boolean }>(`${this.base}/${id}/rebuy`, {});
   }
+
+  leaveTable(id: string) {
+    return this.http.post(`${this.base}/leave/${id}`, {});
+  }
 }

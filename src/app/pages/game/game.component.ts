@@ -73,13 +73,21 @@ export class GameComponent implements OnInit, OnDestroy {
     const players = this.gameState()?.players ?? [];
     const total   = this.maxPlayers();
     const myId    = this.myId;
-    const filled: WaitingSeat[] = players.map(p => ({
+    const me      = this.auth.currentUser();
+
+    // Always show myself in the first seat, even before the first game-state arrives
+    const includesMe = players.some(p => p.id === myId);
+    const list = includesMe
+      ? [...players].sort((a, _b) => (a.id === myId ? -1 : 1))
+      : [{ id: myId, username: me?.username ?? '?', cardCount: 0, score: 0 }, ...players];
+
+    const filled: WaitingSeat[] = list.map(p => ({
       username: p.username,
       avatar: '🃏',
       isMe: p.id === myId,
       isEmpty: false,
     }));
-    const empty: WaitingSeat[] = Array.from({ length: total - filled.length }, () => ({
+    const empty: WaitingSeat[] = Array.from({ length: Math.max(0, total - filled.length) }, () => ({
       username: '',
       avatar: '',
       isMe: false,
@@ -263,6 +271,10 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   leaveGame() {
+    // Notify backend to remove player and clean up empty waiting tables
+    if (this.gameState()?.status === 'waiting' || !this.gameState()) {
+      this.game.leaveTable(this.tableId).subscribe({ error: () => {} });
+    }
     this.router.navigate(['/tables']);
   }
 

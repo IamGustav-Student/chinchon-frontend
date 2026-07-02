@@ -103,14 +103,24 @@ export class HoldemGameComponent implements OnInit, OnDestroy {
     const players = this.gameState()?.players ?? [];
     const total   = 4;
     const myId    = this.myId;
-    const filled: WaitingSeat[] = players.map(p => ({
+    const me      = this.auth.currentUser();
+
+    const includesMe = players.some(p => p.id === myId);
+    const list = includesMe
+      ? [...players].sort((a, _b) => (a.id === myId ? -1 : 1))
+      : [{ id: myId, username: me?.username ?? '?', avatar: me?.avatar || '♠',
+           stack: this.gameState()?.buyIn ?? 0, currentBet: 0, folded: false,
+           isAllIn: false, seatIndex: 0, isDealer: false, isSmallBlind: false,
+           isBigBlind: false, holeCards: null, lastAction: null }, ...players];
+
+    const filled: WaitingSeat[] = list.map(p => ({
       username: p.username,
       avatar: p.avatar || '♠',
       isMe: p.id === myId,
       isEmpty: false,
-      sub: `$${p.stack}`,
+      sub: p.stack ? `$${p.stack}` : '',
     }));
-    const empty: WaitingSeat[] = Array.from({ length: total - filled.length }, () => ({
+    const empty: WaitingSeat[] = Array.from({ length: Math.max(0, total - filled.length) }, () => ({
       username: '',
       avatar: '',
       isMe: false,
@@ -256,7 +266,12 @@ export class HoldemGameComponent implements OnInit, OnDestroy {
 
   confirmLeave()  { this.showLeaveConfirm.set(true); }
   cancelLeave()   { this.showLeaveConfirm.set(false); }
-  leaveTable()    { this.router.navigate(['/holdem']); }
+  leaveTable() {
+    if (this.gameState()?.status === 'waiting' || !this.gameState()) {
+      this.holdem.leaveTable(this.tableId).subscribe({ error: () => {} });
+    }
+    this.router.navigate(['/holdem']);
+  }
 
   actionLabel(action: string | null): string {
     const labels: Record<string, string> = {

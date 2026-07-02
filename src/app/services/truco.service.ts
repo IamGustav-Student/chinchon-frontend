@@ -87,4 +87,8 @@ export class TrucoService {
   joinTable(id: string) {
     return this.http.post<{ tableId: string }>(`${this.base}/join/${id}`, {});
   }
+
+  leaveTable(id: string) {
+    return this.http.post(`${this.base}/leave/${id}`, {});
+  }
 }
