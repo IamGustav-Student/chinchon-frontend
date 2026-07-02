@@ -10,6 +10,7 @@ export interface User {
   avatar: string;
   balance: number;
   bio?: string;
+  role?: 'user' | 'admin';
 }
 
 @Injectable({ providedIn: 'root' })

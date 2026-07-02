@@ -1,0 +1,333 @@
+<div class="admin-page">
+
+  <!-- Header -->
+  <div class="admin-header">
+    <h1>⚙️ Panel de administración</h1>
+  </div>
+
+  <!-- Tabs -->
+  <div class="admin-tabs">
+    <button class="atab" [class.active]="activeTab() === 'stats'"      (click)="setTab('stats')">📊 Resumen</button>
+    <button class="atab" [class.active]="activeTab() === 'users'"      (click)="setTab('users')">👥 Usuarios</button>
+    <button class="atab" [class.active]="activeTab() === 'deposits'"   (click)="setTab('deposits')">💵 Depósitos</button>
+    <button class="atab" [class.active]="activeTab() === 'tables'"     (click)="setTab('tables')">🎮 Mesas</button>
+    <button class="atab" [class.active]="activeTab() === 'tournament'" (click)="setTab('tournament')">🏆 Torneo</button>
+  </div>
+
+  <!-- ── TAB: STATS ── -->
+  @if (activeTab() === 'stats') {
+    @if (statsLoading()) {
+      <div class="loading-msg">Cargando estadísticas...</div>
+    } @else if (stats()) {
+      <div class="stats-grid-admin">
+        <div class="stat-tile">
+          <div class="tile-label">Usuarios totales</div>
+          <div class="tile-value">{{ stats()!.totalUsers | number }}</div>
+        </div>
+        <div class="stat-tile">
+          <div class="tile-label">Activos (7 días)</div>
+          <div class="tile-value">{{ stats()!.activeUsers7d | number }}</div>
+        </div>
+        <div class="stat-tile">
+          <div class="tile-label">Mesas activas</div>
+          <div class="tile-value">{{ stats()!.activeTables }}</div>
+        </div>
+        <div class="stat-tile warn">
+          <div class="tile-label">Depósitos pendientes</div>
+          <div class="tile-value">{{ stats()!.pendingDeposits }}</div>
+          @if (stats()!.pendingDeposits > 0) {
+            <button class="btn btn-sm btn-outline mt-1" (click)="setTab('deposits')">Revisar →</button>
+          }
+        </div>
+        <div class="stat-tile gold">
+          <div class="tile-label">Ingresos semanales</div>
+          <div class="tile-value">${{ stats()!.weeklyRevenue | number }}</div>
+        </div>
+        <div class="stat-tile">
+          <div class="tile-label">Balance total usuarios</div>
+          <div class="tile-value">${{ stats()!.totalBalance | number }}</div>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- ── TAB: USERS ── -->
+  @if (activeTab() === 'users') {
+    <div class="section-toolbar">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por usuario o email..."
+        [(ngModel)]="userSearch"
+        (keydown.enter)="searchUsers()"
+      />
+      <button class="btn btn-primary" (click)="searchUsers()">Buscar</button>
+    </div>
+
+    @if (usersLoading()) {
+      <div class="loading-msg">Cargando usuarios...</div>
+    } @else {
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Usuario</th>
+              <th>Email</th>
+              <th>Saldo</th>
+              <th>Rol</th>
+              <th>Partidas</th>
+              <th>% Victorias</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of users(); track u.id) {
+              <tr [class.banned-row]="u.banned">
+                <td class="id-cell">{{ u.id }}</td>
+                <td class="user-cell">
+                  <span class="u-avatar">{{ u.avatar.length < 6 ? u.avatar : '👤' }}</span>
+                  {{ u.username }}
+                </td>
+                <td class="email-cell">{{ u.email }}</td>
+                <td class="balance-cell">
+                  @if (editingBalance?.id === u.id) {
+                    <input
+                      type="number"
+                      class="balance-input"
+                      [(ngModel)]="editingBalance!.value"
+                      (keydown.enter)="saveBalance()"
+                      (keydown.escape)="editingBalance = null"
+                    />
+                    <button class="action-btn save" (click)="saveBalance()">✓</button>
+                    <button class="action-btn" (click)="editingBalance = null">✕</button>
+                  } @else {
+                    ${{ u.balance | number }}
+                    <button class="action-btn edit" (click)="startEditBalance(u)" title="Editar saldo">✏️</button>
+                  }
+                </td>
+                <td>
+                  <span class="role-badge" [class.admin-badge]="u.role === 'admin'">{{ u.role }}</span>
+                </td>
+                <td class="center">{{ u.gamesPlayed }}</td>
+                <td class="center">{{ winRate(u) }}</td>
+                <td>
+                  <span class="status-badge" [class.banned]="u.banned">
+                    {{ u.banned ? 'Baneado' : 'Activo' }}
+                  </span>
+                </td>
+                <td class="actions-cell">
+                  <button
+                    class="action-btn"
+                    [class.danger]="!u.banned"
+                    [title]="u.banned ? 'Levantar ban' : 'Banear'"
+                    (click)="askBan(u)"
+                  >{{ u.banned ? '✅' : '🚫' }}</button>
+                  <button
+                    class="action-btn"
+                    [title]="u.role === 'admin' ? 'Quitar admin' : 'Hacer admin'"
+                    (click)="toggleRole(u)"
+                  >{{ u.role === 'admin' ? '👤' : '⚙️' }}</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <button class="btn btn-outline btn-sm" [disabled]="usersPage() <= 1" (click)="prevPage()">← Anterior</button>
+        <span>Página {{ usersPage() }} de {{ totalPages() }} — {{ usersTotal() }} usuarios</span>
+        <button class="btn btn-outline btn-sm" [disabled]="usersPage() >= totalPages()" (click)="nextPage()">Siguiente →</button>
+      </div>
+    }
+  }
+
+  <!-- ── TAB: DEPOSITS ── -->
+  @if (activeTab() === 'deposits') {
+    <div class="section-toolbar">
+      <div class="filter-tabs">
+        <button class="filter-tab" [class.active]="depositsFilter() === 'pending'"  (click)="setDepositFilter('pending')">Pendientes</button>
+        <button class="filter-tab" [class.active]="depositsFilter() === 'approved'" (click)="setDepositFilter('approved')">Aprobados</button>
+        <button class="filter-tab" [class.active]="depositsFilter() === 'rejected'" (click)="setDepositFilter('rejected')">Rechazados</button>
+      </div>
+    </div>
+
+    @if (depositsLoading()) {
+      <div class="loading-msg">Cargando depósitos...</div>
+    } @else if (deposits().length === 0) {
+      <div class="empty-msg">No hay depósitos {{ depositsFilter() === 'pending' ? 'pendientes' : depositsFilter() === 'approved' ? 'aprobados' : 'rechazados' }}.</div>
+    } @else {
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Usuario</th>
+              <th>Monto</th>
+              <th>Titular origen</th>
+              <th>Banco</th>
+              <th>Comprobante</th>
+              <th>Fecha</th>
+              @if (depositsFilter() === 'pending') { <th>Acciones</th> }
+            </tr>
+          </thead>
+          <tbody>
+            @for (d of deposits(); track d.id) {
+              <tr>
+                <td class="id-cell">{{ d.id }}</td>
+                <td>{{ d.username }}</td>
+                <td class="amount-cell">${{ d.amount | number }}</td>
+                <td>{{ d.senderName }}</td>
+                <td>{{ d.senderBank }}</td>
+                <td class="tx-cell">{{ d.transactionId }}</td>
+                <td>{{ d.createdAt | date:'dd/MM/yy HH:mm' }}</td>
+                @if (depositsFilter() === 'pending') {
+                  <td class="actions-cell">
+                    <button class="btn btn-sm approve-btn" (click)="approveDeposit(d)">✓ Aprobar</button>
+                    <button class="btn btn-sm reject-btn" (click)="rejectDeposit(d)">✕ Rechazar</button>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+  <!-- ── TAB: TABLES ── -->
+  @if (activeTab() === 'tables') {
+    <div class="section-toolbar">
+      <button class="btn btn-outline" (click)="loadTables()">🔄 Actualizar</button>
+    </div>
+
+    @if (tablesLoading()) {
+      <div class="loading-msg">Cargando mesas...</div>
+    } @else if (tables().length === 0) {
+      <div class="empty-msg">No hay mesas activas en este momento.</div>
+    } @else {
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Juego</th>
+              <th>Estado</th>
+              <th>Jugadores</th>
+              <th>Buy-in</th>
+              <th>Creada</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of tables(); track t.id) {
+              <tr>
+                <td class="id-cell monospace">{{ t.id | slice:0:8 }}...</td>
+                <td><span class="game-badge">{{ gameLabel(t.game) }}</span></td>
+                <td>
+                  <span class="status-badge" [class.playing]="t.status === 'playing'">
+                    {{ t.status === 'playing' ? 'Jugando' : 'Esperando' }}
+                  </span>
+                </td>
+                <td class="center">{{ t.playerCount }}/{{ t.maxPlayers }}</td>
+                <td>{{ t.buyIn === 0 ? 'Gratis' : ('$' + (t.buyIn | number)) }}</td>
+                <td>{{ t.createdAt | date:'HH:mm' }}</td>
+                <td>
+                  <button class="action-btn danger" (click)="closeTable(t)" title="Cerrar mesa">✕</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+  <!-- ── TAB: TOURNAMENT ── -->
+  @if (activeTab() === 'tournament') {
+    @if (tournamentLoading()) {
+      <div class="loading-msg">Cargando datos del torneo...</div>
+    } @else if (!tournament()) {
+      <div class="empty-msg">No hay torneo activo. <button class="btn btn-outline btn-sm" (click)="loadTournament()">🔄 Refrescar</button></div>
+    } @else {
+      <div class="tournament-admin panel">
+        <div class="ta-row">
+          <span class="ta-label">Estado</span>
+          <span class="status-badge" [class.playing]="tournament()!.status === 'in_progress'">
+            {{ tournament()!.status }}
+          </span>
+        </div>
+        <div class="ta-row">
+          <span class="ta-label">Inscriptos</span>
+          <span>{{ tournament()!.registeredCount }} / {{ tournament()!.minPlayers }} mínimo</span>
+        </div>
+        <div class="ta-row">
+          <span class="ta-label">Pozo</span>
+          <span class="gold-text">${{ tournament()!.prizePool | number }}</span>
+        </div>
+        <div class="ta-row">
+          <span class="ta-label">Inicio programado</span>
+          <span>{{ tournament()!.startsAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+
+        <div class="ta-actions">
+          @if (tournament()!.status === 'registration_open' || tournament()!.status === 'upcoming') {
+            <button class="btn btn-primary" (click)="askTournamentAction('start')">▶ Forzar inicio</button>
+          }
+          @if (tournament()!.status !== 'finished' && tournament()!.status !== 'cancelled') {
+            <button class="btn btn-danger" (click)="askTournamentAction('cancel')">✕ Cancelar torneo</button>
+          }
+          <button class="btn btn-outline" (click)="loadTournament()">🔄 Refrescar</button>
+        </div>
+      </div>
+    }
+  }
+
+</div>
+
+<!-- Modal confirmar acción sobre usuario -->
+@if (confirmAction) {
+  <div class="modal-backdrop" (click)="confirmAction = null">
+    <div class="confirm-modal panel" (click)="$event.stopPropagation()">
+      <h3>{{ confirmAction.type === 'ban' ? 'Banear usuario' : 'Levantar ban' }}</h3>
+      <p>
+        @if (confirmAction.type === 'ban') {
+          ¿Querés banear a <strong>{{ confirmAction.username }}</strong>? No podrá iniciar sesión ni jugar.
+        } @else {
+          ¿Querés levantar el ban de <strong>{{ confirmAction.username }}</strong>?
+        }
+      </p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline" (click)="confirmAction = null">Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmBan()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal confirmar acción de torneo -->
+@if (confirmTournamentAction) {
+  <div class="modal-backdrop" (click)="confirmTournamentAction = null">
+    <div class="confirm-modal panel" (click)="$event.stopPropagation()">
+      <h3>{{ confirmTournamentAction === 'start' ? 'Forzar inicio del torneo' : 'Cancelar torneo' }}</h3>
+      <p>
+        @if (confirmTournamentAction === 'start') {
+          El torneo se iniciará inmediatamente aunque no haya alcanzado el mínimo de inscriptos.
+        } @else {
+          El torneo se cancelará y se devolverá la inscripción a todos los jugadores.
+        }
+      </p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline" (click)="confirmTournamentAction = null">Cancelar</button>
+        <button
+          class="btn"
+          [class.btn-primary]="confirmTournamentAction === 'start'"
+          [class.btn-danger]="confirmTournamentAction === 'cancel'"
+          (click)="confirmTournament()"
+        >Confirmar</button>
+      </div>
+    </div>
+  </div>
+}

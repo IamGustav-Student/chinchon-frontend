@@ -19,6 +19,9 @@
       <li><a routerLink="/profile" routerLinkActive="active">Perfil</a></li>
       <li><a routerLink="/rules" routerLinkActive="active">Reglas</a></li>
       <li><a href="https://wa.me/5491123456789" target="_blank" rel="noopener noreferrer" class="nav-help">🟢 Ayuda</a></li>
+      @if (auth.currentUser()?.role === 'admin') {
+        <li><a routerLink="/admin" routerLinkActive="active" class="nav-admin">⚙️ Admin</a></li>
+      }
     </ul>
     <div class="navbar-user">
       <span class="balance">${{ auth.currentUser()?.balance | number }}</span>

@@ -1,0 +1,312 @@
+.admin-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.admin-header {
+  margin-bottom: 1.5rem;
+  h1 { margin: 0; font-size: 1.6rem; color: #c9a227; }
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────
+.admin-tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 1.75rem;
+  padding-bottom: 0;
+}
+
+.atab {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #a0aec0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -1px;
+
+  &.active { color: #c9a227; border-bottom-color: #c9a227; }
+  &:hover:not(.active) { color: #fff; }
+}
+
+// ── Misc ──────────────────────────────────────────────────────────────────
+.loading-msg, .empty-msg {
+  color: #a0aec0;
+  padding: 2rem;
+  text-align: center;
+}
+
+.section-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  background: #1e1e22;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 0.55rem 1rem;
+  &:focus { outline: none; border-color: #c9a227; }
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.filter-tab {
+  background: #141416;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  color: #a0aec0;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  &.active { border-color: #c9a227; color: #c9a227; background: rgba(201,162,39,0.08); }
+  &:hover:not(.active) { color: #fff; }
+}
+
+// ── Stats grid ────────────────────────────────────────────────────────────
+.stats-grid-admin {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.stat-tile {
+  background: #141416;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  .tile-label { font-size: 0.78rem; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.06em; }
+  .tile-value { font-size: 2rem; font-weight: 800; color: #fff; }
+
+  &.warn  { border-color: rgba(229,57,53,0.3);  .tile-value { color: #ef9a9a; } }
+  &.gold  { border-color: rgba(201,162,39,0.3); .tile-value { color: #f0d060; } }
+}
+
+// ── Table ─────────────────────────────────────────────────────────────────
+.admin-table-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th {
+    background: #141416;
+    color: #a0aec0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  td {
+    background: #0c0c0e;
+    padding: 0.7rem 1rem;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+
+  tr:hover td { background: #141416; }
+
+  &.banned-row td { opacity: 0.5; }
+}
+
+.id-cell    { color: #a0aec0; font-size: 0.8rem; }
+.monospace  { font-family: monospace; }
+.email-cell { color: #a0aec0; font-size: 0.82rem; }
+.user-cell  { display: flex; align-items: center; gap: 0.4rem; .u-avatar { font-size: 1.1rem; } }
+.balance-cell { display: flex; align-items: center; gap: 0.3rem; white-space: nowrap; }
+.amount-cell  { font-weight: 700; color: #4caf50; }
+.tx-cell      { font-family: monospace; font-size: 0.8rem; color: #a0aec0; }
+.actions-cell { display: flex; gap: 0.3rem; align-items: center; white-space: nowrap; }
+.center       { text-align: center; }
+
+.action-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #fff;
+  &:hover { background: rgba(255,255,255,0.06); }
+  &.danger:hover { border-color: #e53935; }
+  &.edit:hover   { border-color: #c9a227; }
+  &.save         { color: #4caf50; border-color: rgba(76,175,80,0.4); }
+}
+
+.balance-input {
+  width: 90px;
+  background: #1e1e22;
+  border: 1px solid #c9a227;
+  border-radius: 6px;
+  color: #fff;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.85rem;
+}
+
+// ── Badges ────────────────────────────────────────────────────────────────
+.role-badge {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  color: #a0aec0;
+  &.admin-badge { background: rgba(201,162,39,0.12); border-color: rgba(201,162,39,0.4); color: #c9a227; }
+}
+
+.status-badge {
+  background: rgba(76,175,80,0.1);
+  border: 1px solid rgba(76,175,80,0.3);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  color: #4caf50;
+  &.banned  { background: rgba(229,57,53,0.1); border-color: rgba(229,57,53,0.3); color: #ef9a9a; }
+  &.playing { background: rgba(201,162,39,0.1); border-color: rgba(201,162,39,0.3); color: #f0d060; }
+}
+
+.game-badge {
+  background: rgba(255,255,255,0.06);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+}
+
+// ── Deposit action buttons ────────────────────────────────────────────────
+.approve-btn {
+  background: rgba(76,175,80,0.12);
+  border: 1px solid rgba(76,175,80,0.4);
+  border-radius: 8px;
+  color: #4caf50;
+  cursor: pointer;
+  font-size: 0.82rem;
+  padding: 0.3rem 0.7rem;
+  &:hover { background: rgba(76,175,80,0.25); }
+}
+
+.reject-btn {
+  background: rgba(229,57,53,0.1);
+  border: 1px solid rgba(229,57,53,0.3);
+  border-radius: 8px;
+  color: #ef9a9a;
+  cursor: pointer;
+  font-size: 0.82rem;
+  padding: 0.3rem 0.7rem;
+  &:hover { background: rgba(229,57,53,0.2); }
+}
+
+// ── Tournament ────────────────────────────────────────────────────────────
+.tournament-admin {
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  .ta-label { color: #a0aec0; font-size: 0.9rem; }
+}
+
+.ta-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.gold-text { color: #f0d060; font-weight: 700; }
+
+// ── Pagination ────────────────────────────────────────────────────────────
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #a0aec0;
+  flex-wrap: wrap;
+}
+
+// ── Modals ────────────────────────────────────────────────────────────────
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.confirm-modal {
+  max-width: 420px;
+  width: 90%;
+  h3 { margin: 0 0 0.75rem; }
+  p  { color: #a0aec0; line-height: 1.55; }
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  justify-content: flex-end;
+}
+
+// ── Misc buttons ──────────────────────────────────────────────────────────
+.btn-sm    { font-size: 0.82rem; padding: 0.3rem 0.7rem; }
+.btn-danger {
+  background: rgba(229,57,53,0.15);
+  border: 1px solid rgba(229,57,53,0.4);
+  border-radius: 10px;
+  color: #ef9a9a;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.55rem 1.25rem;
+  font-weight: 600;
+  &:hover { background: rgba(229,57,53,0.28); }
+}
+
+.mt-1 { margin-top: 0.25rem; }
+
+@media (max-width: 700px) {
+  .stats-grid-admin { grid-template-columns: 1fr 1fr; }
+  .admin-tabs { gap: 0; }
+  .atab { padding: 0.5rem 0.6rem; font-size: 0.8rem; }
+}

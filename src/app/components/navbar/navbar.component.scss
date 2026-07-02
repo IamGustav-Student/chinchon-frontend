@@ -75,6 +75,14 @@
   align-items: center;
 }
 
+.nav-admin {
+  background: rgba(201,162,39,0.08) !important;
+  color: #c9a227 !important;
+  border: 1px solid rgba(201,162,39,0.2) !important;
+  border-radius: 8px;
+  &.active, &:hover { background: rgba(201,162,39,0.18) !important; }
+}
+
 .inbox-dot {
   position: absolute;
   top: -4px;
