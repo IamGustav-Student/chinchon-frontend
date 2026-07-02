@@ -5,18 +5,20 @@ Todas las rutas son relativas a `src/app/`.
 
 ---
 
-## 1. Pestaña de depósito — reemplazar formulario manual por instrucciones automáticas
+## 1. Pestaña de depósito — reemplazar formulario manual por instrucciones automáticas ⚠️ URGENTE — ROTO EN PRODUCCIÓN
 
-**Archivo:** `pages/profile/profile.component.ts` y `profile.component.html`
+**Archivos:** `pages/profile/profile.component.ts`, `profile.component.html`, `services/wallet.service.ts`
 
-### Contexto
-El flujo de depósito cambió completamente. Ya no existe el formulario donde el usuario declaraba la transferencia manualmente. Ahora:
+### Por qué es urgente
+Revisé el código actual y el formulario de depósito **hoy está roto**: `WalletService.deposit()` solo manda `{ amount }`, pero el backend (`POST /api/wallet/deposit`) requiere también `senderName`, `senderBank` y `transactionId` — cualquier usuario que use el formulario actual va a recibir un error 400. Además la tarjeta muestra un alias y CBU **inventados/hardcodeados** (`juegos.carta.mp`, `0000003100012345678901`) que no son reales.
 
-- La plataforma tiene **una sola cuenta de Mercado Pago** con un alias fijo.
+### Contexto del nuevo flujo
+- La plataforma tiene **una sola cuenta de Mercado Pago** con un alias real (configurado en el backend, no hardcodeado en el frontend).
 - Cada usuario tiene un **código único** (`JDC-{USERNAME}`) que debe poner como concepto al transferir.
-- Cuando la transferencia llega, Mercado Pago notifica al backend automáticamente y el saldo se acredita solo.
+- Mercado Pago le avisa al backend automáticamente vía webhook y el saldo se acredita solo, sin que nadie tenga que aprobar nada a mano.
+- Esto reemplaza TODO el formulario manual (monto, titular, banco, comprobante, checkbox, botón de WhatsApp).
 
-### Endpoint nuevo
+### Endpoint a consumir
 ```
 GET /api/wallet/deposit-info
 Authorization: Bearer {token}
@@ -29,59 +31,105 @@ Respuesta:
 }
 ```
 
-### Qué sacar del componente
-Eliminar completamente estos signals y toda su lógica:
+### 1. `services/wallet.service.ts` — agregar método
 ```typescript
-// BORRAR ESTOS:
-depositSenderName = signal<string>('');
-depositSenderBank = signal<string>('');
-depositTransactionId = signal<string>('');
-depositAcceptTerms = signal<boolean>(false);
-depositSuccess = signal<boolean>(false);
-depositError = signal<string>('');
+getDepositInfo() {
+  return this.http.get<{ alias: string; code: string; instructions: string }>(
+    `${this.API}/deposit-info`
+  );
+}
+```
+(El método viejo `deposit(amount)` puede quedar — el backend lo sigue teniendo como fallback manual — pero ya no se usa desde esta pantalla.)
+
+### 2. `profile.component.ts` — borrar y reemplazar
+
+**Borrar** (líneas 60–68 actuales y el método `submitDeposit()` + `getWhatsAppDepositLink()`, líneas 174–218):
+```typescript
+depositAmount        = 0;
+depositSenderName    = '';
+depositSenderBank    = '';
+depositTransactionId = '';
+depositAcceptTerms   = false;
+depositLoading = signal(false);
+depositSuccess = signal(false);
+depositError   = signal('');
+// ...
 submitDeposit() { ... }
-getWhatsAppDepositLink() { ... }
+getWhatsAppDepositLink(): string { ... }
 ```
 
-### Qué agregar
+**Agregar** en su lugar:
 ```typescript
 depositInfo = signal<{ alias: string; code: string; instructions: string } | null>(null);
+depositCopied = signal<'alias' | 'code' | null>(null);
 
-ngOnInit() {
-  // agregar junto a las otras llamadas:
-  this.http.get<any>(`${environment.apiUrl}/wallet/deposit-info`).subscribe({
-    next: (info) => this.depositInfo.set(info),
-  });
+// dentro de ngOnInit(), junto a las otras llamadas:
+this.wallet.getDepositInfo().subscribe({
+  next: (info) => this.depositInfo.set(info),
+});
+
+copyToClipboard(text: string, which: 'alias' | 'code') {
+  navigator.clipboard.writeText(text);
+  this.depositCopied.set(which);
+  setTimeout(() => this.depositCopied.set(null), 2000);
 }
 ```
 
-### Cómo debe verse la pestaña "Depósito" en el HTML
-Reemplazar el formulario actual por esto (adaptar al diseño existente):
+### 3. `profile.component.html` — reemplazar todo el bloque `@if (activeTab() === 'deposit') { ... }` (líneas 179–259 actuales)
 
-```
-┌─────────────────────────────────────────────────────┐
-│  ¿Cómo cargar saldo?                                │
-│                                                     │
-│  1. Abrí tu banco o Mercado Pago                    │
-│  2. Transferí el monto que quieras a:               │
-│                                                     │
-│     Alias: juegosdecartas          [Copiar]         │
-│                                                     │
-│  3. En el campo "Concepto" escribí exactamente:     │
-│                                                     │
-│     ┌───────────────────────────────┐               │
-│     │  JDC-GUSTAVO                  │  [Copiar]     │
-│     └───────────────────────────────┘               │
-│                                                     │
-│  ⚠ El concepto es obligatorio. Sin él tu           │
-│    depósito no se va a acreditar automáticamente.  │
-│                                                     │
-│  El saldo se acredita en segundos de forma          │
-│  automática una vez confirmada la transferencia.    │
-└─────────────────────────────────────────────────────┘
+Sacar: la tarjeta con alias/CBU/banco/titular hardcodeados, el cartel de advertencia de titularidad, el `<form>` completo (monto, titular, banco, comprobante, checkbox), y el botón de WhatsApp.
+
+Reemplazar por algo como:
+```html
+@if (activeTab() === 'deposit') {
+  <div class="deposit-section panel">
+    <h3>Cargar Saldo</h3>
+    <p class="section-desc" style="color: #a0aec0; font-size: 0.95rem;">
+      Transferí desde tu banco o billetera virtual. El saldo se acredita solo, en segundos.
+    </p>
+
+    @if (depositInfo(); as info) {
+      <div class="transfer-info mt-2">
+        <div class="info-row">
+          <span class="info-label">Alias:</span>
+          <strong class="info-value text-gold">{{ info.alias }}</strong>
+          <button type="button" class="btn btn-outline btn-sm" (click)="copyToClipboard(info.alias, 'alias')">
+            {{ depositCopied() === 'alias' ? '✓ Copiado' : 'Copiar' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="deposit-warning-box mt-3">
+        <span class="warning-icon">⚠️</span>
+        <div class="warning-text">
+          En el campo <strong>"Concepto"</strong> de la transferencia escribí exactamente este código
+          (sin él, tu depósito no se va a acreditar):
+        </div>
+      </div>
+
+      <div class="deposit-code-box mt-2" style="display:flex; align-items:center; gap: 0.75rem;">
+        <strong class="text-gold" style="font-size: 1.3rem; letter-spacing: 1px;">{{ info.code }}</strong>
+        <button type="button" class="btn btn-primary btn-sm" (click)="copyToClipboard(info.code, 'code')">
+          {{ depositCopied() === 'code' ? '✓ Copiado' : 'Copiar código' }}
+        </button>
+      </div>
+
+      <p class="text-muted mt-3" style="font-size: 0.9rem;">{{ info.instructions }}</p>
+    } @else {
+      <p class="text-muted mt-2">Cargando datos de depósito...</p>
+    }
+
+    <div class="deposit-help-footer mt-3" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem;">
+      <p class="text-muted" style="font-size: 0.9rem;">¿Tuviste algún problema? Escribinos directamente:</p>
+      <a href="https://wa.me/5491123456789" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm mt-2">
+        🟢 Soporte WhatsApp
+      </a>
+    </div>
+  </div>
+}
 ```
 
-Agregar un botón "Copiar" que copie al portapapeles con `navigator.clipboard.writeText(...)`.
+Adaptar clases/estilos al diseño existente — lo importante es: mostrar `alias`, mostrar `code` bien grande y copiable, y dejar claro que el concepto es obligatorio.
 
 ---
 
@@ -190,7 +238,7 @@ Sugerencia: si el saldo es 0, mostrar un banner o botón destacado que lleve a l
 
 | # | Tarea | Prioridad |
 |---|-------|-----------|
-| 1 | Reemplazar pestaña de depósito con el nuevo flujo JDC | Alta |
+| 1 | Reemplazar pestaña de depósito con el nuevo flujo JDC | 🔴 Urgente — roto en producción |
 | 2 | Sacar campo editable de username en perfil | Alta |
 | 3 | Agregar `getDepositInfo()` y actualizar tipos en WalletService | Alta |
 | 4 | Mostrar "Gratis" para mesas con bet=0 | Media |
