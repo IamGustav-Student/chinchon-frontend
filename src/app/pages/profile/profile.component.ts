@@ -1,10 +1,11 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { WalletService, WalletMovement, DepositInfo } from '../../services/wallet.service';
+import { InboxService } from '../../services/inbox.service';
 import { AvatarSvgComponent, AvatarConfig } from '../../components/avatar-svg/avatar-svg.component';
 import { environment } from '../../../environments/environment';
 
@@ -23,12 +24,13 @@ const HAIR_STYLE_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-profile',
-  imports: [DecimalPipe, DatePipe, FormsModule, AvatarSvgComponent],
+  imports: [DecimalPipe, DatePipe, FormsModule, AvatarSvgComponent, RouterLink],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })
 export class ProfileComponent implements OnInit {
-  auth = inject(AuthService);
+  auth   = inject(AuthService);
+  inbox  = inject(InboxService);
   private wallet = inject(WalletService);
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
@@ -56,7 +58,7 @@ export class ProfileComponent implements OnInit {
   editBio  = signal(false);
   bioInput = signal(this.auth.currentUser()?.bio ?? '');
 
-  activeTab = signal<'avatar' | 'deposit' | 'history'>('avatar');
+  activeTab = signal<'avatar' | 'deposit' | 'history' | 'messages'>('avatar');
 
   // Deposit form — plain properties for ngModel compatibility
   depositAmount        = 0;
@@ -74,6 +76,7 @@ export class ProfileComponent implements OnInit {
     });
     this.wallet.getHistory().subscribe({ next: (h) => this.history.set(h) });
     this.wallet.getDepositInfo().subscribe({ next: (info) => this.depositInfo.set(info) });
+    this.inbox.fetchUnread();
     this.http.get<any>(`${environment.apiUrl}/perfil`).subscribe({
       next: (p) => this.stats.set({ games_played: p.games_played, games_won: p.games_won, games_lost: p.games_lost }),
     });

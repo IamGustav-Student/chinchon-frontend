@@ -3,19 +3,8 @@
     <a class="navbar-logo" routerLink="/dashboard">🃏 Juegos de Carta</a>
     <ul class="navbar-links">
       <li><a routerLink="/dashboard" routerLinkActive="active">Inicio</a></li>
-      <li><a routerLink="/tables" routerLinkActive="active">Chinchón</a></li>
-      <li><a routerLink="/holdem" routerLinkActive="active">Hold'em</a></li>
-      <li><a routerLink="/truco" routerLinkActive="active">Truco</a></li>
       <li><a routerLink="/ranking" routerLinkActive="active">Ranking</a></li>
       <li><a routerLink="/tournament" routerLinkActive="active" class="nav-tournament">🏆 Torneo</a></li>
-      <li>
-        <a routerLink="/inbox" routerLinkActive="active" class="nav-inbox">
-          ✉️
-          @if (inbox.unreadCount() > 0) {
-            <span class="inbox-dot">{{ inbox.unreadCount() }}</span>
-          }
-        </a>
-      </li>
       <li><a routerLink="/profile" routerLinkActive="active">Perfil</a></li>
       <li><a routerLink="/rules" routerLinkActive="active">Reglas</a></li>
       <li><a href="https://wa.me/5491123456789" target="_blank" rel="noopener noreferrer" class="nav-help">🟢 Ayuda</a></li>

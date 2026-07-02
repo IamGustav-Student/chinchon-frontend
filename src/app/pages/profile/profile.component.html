@@ -62,6 +62,12 @@
     <button class="tab-btn" [class.active]="activeTab() === 'avatar'" (click)="activeTab.set('avatar')">👤 Mi Avatar</button>
     <button class="tab-btn" [class.active]="activeTab() === 'deposit'" (click)="activeTab.set('deposit')">💵 Depositar</button>
     <button class="tab-btn" [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">📜 Movimientos</button>
+    <button class="tab-btn tab-inbox" [class.active]="activeTab() === 'messages'" (click)="activeTab.set('messages')">
+      ✉️ Mensajes
+      @if (inbox.unreadCount() > 0) {
+        <span class="inbox-badge">{{ inbox.unreadCount() }}</span>
+      }
+    </button>
   </div>
 
   <!-- TAB: AVATAR -->
@@ -279,6 +285,22 @@
           }
         </div>
       }
+    </div>
+  }
+
+  <!-- TAB: MESSAGES -->
+  @if (activeTab() === 'messages') {
+    <div class="messages-section panel">
+      <h3>Mensajes</h3>
+      <p class="section-desc" style="color:#a0aec0; font-size:0.95rem; margin-bottom:1.5rem;">
+        Tus conversaciones con otros jugadores.
+      </p>
+      <a routerLink="/inbox" class="btn btn-primary" style="display:inline-flex; align-items:center; gap:0.5rem;">
+        ✉️ Abrir bandeja de entrada
+        @if (inbox.unreadCount() > 0) {
+          <span class="inbox-badge">{{ inbox.unreadCount() }}</span>
+        }
+      </a>
     </div>
   }
 
