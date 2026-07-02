@@ -184,11 +184,7 @@
       <div class="transfer-info mt-2">
         <div class="info-row">
           <span class="info-label">Alias:</span>
-          <strong class="info-value text-gold">juegos.carta.mp</strong>
-        </div>
-        <div class="info-row">
-          <span class="info-label">CBU:</span>
-          <strong class="info-value text-gold">0000003100012345678901</strong>
+          <strong class="info-value text-gold">{{ depositInfo()?.alias ?? '…' }}</strong>
         </div>
         <div class="info-row">
           <span class="info-label">Banco:</span>
@@ -198,6 +194,12 @@
           <span class="info-label">Titular:</span>
           <span class="info-value">Juegos de Carta S.R.L.</span>
         </div>
+      </div>
+
+      <div class="deposit-code-box mt-3">
+        <p class="deposit-code-label">Poné este código en el <strong>concepto / descripción</strong> de la transferencia:</p>
+        <div class="deposit-code-value">{{ depositInfo()?.code ?? '…' }}</div>
+        <p class="deposit-code-hint">Sin este código no podemos identificar tu pago.</p>
       </div>
 
       <div class="deposit-warning-box">

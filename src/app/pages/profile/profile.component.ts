@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { WalletService, WalletMovement } from '../../services/wallet.service';
+import { WalletService, WalletMovement, DepositInfo } from '../../services/wallet.service';
 import { AvatarSvgComponent, AvatarConfig } from '../../components/avatar-svg/avatar-svg.component';
 import { environment } from '../../../environments/environment';
 
@@ -40,8 +40,9 @@ export class ProfileComponent implements OnInit {
   readonly HAIR_STYLES      = HAIR_STYLES;
   readonly HAIR_STYLE_LABELS = HAIR_STYLE_LABELS;
 
-  history   = signal<WalletMovement[]>([]);
-  stats     = signal({ games_played: 0, games_won: 0, games_lost: 0 });
+  history     = signal<WalletMovement[]>([]);
+  stats       = signal({ games_played: 0, games_won: 0, games_lost: 0 });
+  depositInfo = signal<DepositInfo | null>(null);
   saveLoading = signal(false);
 
   // Avatar state
@@ -72,6 +73,7 @@ export class ProfileComponent implements OnInit {
       if (params['tab'] === 'deposit') this.activeTab.set('deposit');
     });
     this.wallet.getHistory().subscribe({ next: (h) => this.history.set(h) });
+    this.wallet.getDepositInfo().subscribe({ next: (info) => this.depositInfo.set(info) });
     this.http.get<any>(`${environment.apiUrl}/perfil`).subscribe({
       next: (p) => this.stats.set({ games_played: p.games_played, games_won: p.games_won, games_lost: p.games_lost }),
     });
@@ -197,7 +199,7 @@ export class ProfileComponent implements OnInit {
     this.depositLoading.set(true);
     this.depositError.set('');
     this.depositSuccess.set(false);
-    this.wallet.deposit(this.depositAmount).subscribe({
+    this.wallet.deposit(this.depositAmount, this.depositSenderName, this.depositSenderBank, this.depositTransactionId).subscribe({
       next: ({ balance }) => {
         const user = this.auth.currentUser();
         if (user) this.auth.currentUser.set({ ...user, balance });

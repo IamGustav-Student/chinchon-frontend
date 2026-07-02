@@ -56,11 +56,7 @@ export class DashboardComponent implements OnInit {
     this.walletLoading.set(true);
     this.walletError.set('');
 
-    const action = this.walletModal === 'deposit'
-      ? this.wallet.deposit(amount)
-      : this.wallet.withdraw(amount);
-
-    action.subscribe({
+    this.wallet.withdraw(amount).subscribe({
       next: ({ balance }) => {
         const user = this.auth.currentUser();
         if (user) this.auth.currentUser.set({ ...user, balance });

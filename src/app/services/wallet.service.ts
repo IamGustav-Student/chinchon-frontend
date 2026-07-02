@@ -8,6 +8,12 @@ export interface WalletMovement {
   created_at: string;
 }
 
+export interface DepositInfo {
+  alias: string;
+  code: string;
+  instructions: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class WalletService {
   private readonly API = `${environment.apiUrl}/wallet`;
@@ -18,8 +24,14 @@ export class WalletService {
     return this.http.get<{ balance: number }>(`${this.API}/balance`);
   }
 
-  deposit(amount: number) {
-    return this.http.post<{ balance: number }>(`${this.API}/deposit`, { amount });
+  getDepositInfo() {
+    return this.http.get<DepositInfo>(`${this.API}/deposit-info`);
+  }
+
+  deposit(amount: number, senderName: string, senderBank: string, transactionId: string) {
+    return this.http.post<{ balance: number }>(`${this.API}/deposit`, {
+      amount, senderName, senderBank, transactionId,
+    });
   }
 
   withdraw(amount: number) {
