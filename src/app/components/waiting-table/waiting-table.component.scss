@@ -3,27 +3,27 @@
   width: 100%;
 }
 
-.wt-wrapper {
+.vs-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 0;
+  gap: 2rem;
+  padding: 2rem 1rem;
+  width: 100%;
 }
 
-// ── Progress ring header ──────────────────────────────────────────────────
-.wt-header {
+// ── Header ───────────────────────────────────────────────────────────────────
+.vs-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .wt-progress-ring {
   position: relative;
   width: 60px;
   height: 60px;
-
   svg { display: block; }
 }
 
@@ -43,121 +43,185 @@
   span { font-size: 0.7rem; color: #a0aec0; }
 }
 
-.wt-subtitle {
+.vs-subtitle {
   font-size: 0.85rem;
   color: #a0aec0;
   margin: 0;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
 }
 
-// ── Table scene ──────────────────────────────────────────────────────────
-// min() thirds: max design size | screen width | back-calc from available height
-// 220px = navbar(56) + game-header(55) + wt-header(80) + gaps/padding(29)
-.table-scene {
-  position: relative;
-  width: min(760px, 92vw, calc((100vh - 220px) * 660 / 470));
-  aspect-ratio: 660 / 470;
+.vs-game-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.18);
+  text-transform: uppercase;
+  margin: 0;
 }
 
-// ── Felt oval ────────────────────────────────────────────────────────────
-.felt-oval {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
-  height: 52%;
-  background: radial-gradient(ellipse at 50% 35%, #1c4a1c 0%, #0d2810 65%, #081a08 100%);
-  border-radius: 50%;
-  border: 3px solid #2a5e2a;
-  box-shadow:
-    0 0 0 6px rgba(42,94,42,0.22),
-    0 0 0 9px rgba(0,0,0,0.45),
-    inset 0 0 32px rgba(0,0,0,0.45),
-    0 10px 40px rgba(0,0,0,0.7);
+// ── Arena ────────────────────────────────────────────────────────────────────
+.vs-arena {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 3rem;
+  width: 100%;
+  max-width: 600px;
 }
 
-.felt-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: rgba(255,255,255,0.2);
-  text-transform: uppercase;
-  user-select: none;
-}
-
-// ── Seat chips ───────────────────────────────────────────────────────────
-.seat-chip {
-  position: absolute;
-  transform: translate(-50%, -50%);
+// ── Sides ────────────────────────────────────────────────────────────────────
+.vs-side {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  width: 72px;
+  gap: 1.75rem;
+  flex: 1;
 }
 
-.seat-avatar {
-  width: 52px;
-  height: 52px;
+// ── Player card ──────────────────────────────────────────────────────────────
+.player-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.player-avatar {
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
   background: #1e1e22;
-  border: 2px solid rgba(255,255,255,0.15);
+  border: 3px solid rgba(255, 255, 255, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-  transition: border-color 0.2s;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
+  animation: seat-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &.me-ring {
+    border-color: #c9a227;
+    box-shadow:
+      0 0 0 4px rgba(201, 162, 39, 0.22),
+      0 6px 24px rgba(0, 0, 0, 0.55);
+  }
 }
 
-.seat-chip.occupied .seat-avatar {
-  border-color: #4caf50;
-  animation: seat-pop 0.35s ease-out;
+.avatar-emoji {
+  font-size: 3rem;
+  line-height: 1;
+  user-select: none;
 }
 
-.seat-chip.mine .seat-avatar {
-  border-color: #c9a227;
-  box-shadow: 0 0 0 3px rgba(201,162,39,0.25), 0 2px 8px rgba(0,0,0,0.4);
+.empty-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 2.5px dashed rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse-empty 1.9s ease-in-out infinite;
 }
 
-.seat-name {
-  font-size: 0.75rem;
-  font-weight: 600;
+.empty-q {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.18);
+  line-height: 1;
+}
+
+.player-name {
+  font-size: 1rem;
+  font-weight: 700;
   color: #fff;
+  margin: 0;
   text-align: center;
-  white-space: nowrap;
+  max-width: 130px;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 72px;
-  &.muted { color: #a0aec0; }
+  white-space: nowrap;
+
+  &.muted {
+    color: #a0aec0;
+    font-weight: 400;
+    font-size: 0.9rem;
+  }
 }
 
-.seat-sub {
-  font-size: 0.65rem;
+.me-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #c9a227;
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 20px;
+  padding: 2px 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.player-sub {
+  font-size: 0.75rem;
   color: #f0d060;
 }
 
-// ── Empty seat ───────────────────────────────────────────────────────────
-.seat-empty-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 2px dashed rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.03);
-  animation: pulse-empty 1.8s ease-in-out infinite;
+// ── VS divider ───────────────────────────────────────────────────────────────
+.vs-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
+.vs-line {
+  width: 2px;
+  height: 50px;
+  background: linear-gradient(to bottom, transparent, rgba(201, 162, 39, 0.35), transparent);
+}
+
+.vs-text {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #c9a227;
+  letter-spacing: 0.06em;
+  text-shadow:
+    0 0 24px rgba(201, 162, 39, 0.45),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  line-height: 1;
+}
+
+// ── Animations ───────────────────────────────────────────────────────────────
 @keyframes pulse-empty {
-  0%, 100% { border-color: rgba(255,255,255,0.12); }
-  50%       { border-color: rgba(255,255,255,0.32); }
+  0%, 100% { border-color: rgba(255, 255, 255, 0.12); }
+  50%       { border-color: rgba(255, 255, 255, 0.32); }
 }
 
 @keyframes seat-pop {
-  0%   { transform: scale(0.6); opacity: 0; }
-  60%  { transform: scale(1.12); }
+  0%   { transform: scale(0.65); opacity: 0; }
+  70%  { transform: scale(1.1); }
   100% { transform: scale(1); opacity: 1; }
+}
+
+// ── Mobile ───────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .vs-arena { gap: 1.5rem; }
+
+  .player-avatar,
+  .empty-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .avatar-emoji { font-size: 2.2rem; }
+  .vs-text { font-size: 2rem; }
+  .vs-line { height: 35px; }
 }

@@ -1,5 +1,7 @@
-<div class="wt-wrapper">
-  <div class="wt-header">
+<div class="vs-wrapper">
+
+  <!-- Encabezado con ring de progreso -->
+  <div class="vs-header">
     <div class="wt-progress-ring">
       <svg width="60" height="60" viewBox="0 0 60 60">
         <circle cx="30" cy="30" r="22" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="4"/>
@@ -13,29 +15,71 @@
       </svg>
       <div class="wt-count">{{ seatedCount }}<span>/{{ totalSeats }}</span></div>
     </div>
-    <p class="wt-subtitle">Esperando jugadores...</p>
+    <p class="vs-subtitle">Esperando jugadores...</p>
+    @if (gameName) {
+      <p class="vs-game-label">{{ gameName }}</p>
+    }
   </div>
 
-  <div class="table-scene">
-    <div class="felt-oval">
-      <div class="felt-label">{{ gameName }}</div>
+  <!-- Arena VS -->
+  <div class="vs-arena">
+
+    <!-- Lado izquierdo -->
+    <div class="vs-side">
+      @for (seat of leftSeats; track $index) {
+        <div class="player-card" [class.is-me]="seat.isMe">
+          @if (!seat.isEmpty) {
+            <div class="player-avatar" [class.me-ring]="seat.isMe">
+              @if (isDataUrl(seat.avatar)) {
+                <img [src]="seat.avatar" alt="" />
+              } @else {
+                <span class="avatar-emoji">{{ seat.avatar }}</span>
+              }
+            </div>
+            <p class="player-name">{{ seat.username }}</p>
+            @if (seat.isMe) { <span class="me-badge">Tú</span> }
+            @if (seat.sub) { <span class="player-sub">{{ seat.sub }}</span> }
+          } @else {
+            <div class="empty-avatar">
+              <span class="empty-q">?</span>
+            </div>
+            <p class="player-name muted">Libre</p>
+          }
+        </div>
+      }
     </div>
 
-    @for (seat of seatsWithPos(); track $index) {
-      <div class="seat-chip"
-           [class.occupied]="!seat.isEmpty"
-           [class.mine]="seat.isMe && !seat.isEmpty"
-           [style.left.%]="seat.xPct"
-           [style.top.%]="seat.yPct">
-        @if (!seat.isEmpty) {
-          <div class="seat-avatar">{{ seat.avatar }}</div>
-          <div class="seat-name">{{ seat.username }}</div>
-          @if (seat.sub) { <div class="seat-sub">{{ seat.sub }}</div> }
-        } @else {
-          <div class="seat-empty-icon"></div>
-          <div class="seat-name muted">Libre</div>
-        }
-      </div>
-    }
+    <!-- Divisor VS -->
+    <div class="vs-divider">
+      <div class="vs-line"></div>
+      <span class="vs-text">VS</span>
+      <div class="vs-line"></div>
+    </div>
+
+    <!-- Lado derecho -->
+    <div class="vs-side">
+      @for (seat of rightSeats; track $index) {
+        <div class="player-card" [class.is-me]="seat.isMe">
+          @if (!seat.isEmpty) {
+            <div class="player-avatar" [class.me-ring]="seat.isMe">
+              @if (isDataUrl(seat.avatar)) {
+                <img [src]="seat.avatar" alt="" />
+              } @else {
+                <span class="avatar-emoji">{{ seat.avatar }}</span>
+              }
+            </div>
+            <p class="player-name">{{ seat.username }}</p>
+            @if (seat.isMe) { <span class="me-badge">Tú</span> }
+            @if (seat.sub) { <span class="player-sub">{{ seat.sub }}</span> }
+          } @else {
+            <div class="empty-avatar">
+              <span class="empty-q">?</span>
+            </div>
+            <p class="player-name muted">Libre</p>
+          }
+        </div>
+      }
+    </div>
+
   </div>
 </div>

@@ -17,12 +17,6 @@ export class WaitingTableComponent {
   @Input() seats: WaitingSeat[] = [];
   @Input() gameName = '';
 
-  // Orbit radii as percentage of scene (50% = center, measured from center outward)
-  // Oval is 60% wide (±30% from center) and 52% tall (±26% from center)
-  // Seats orbit at 42%/40% so they clear the oval edge
-  private readonly RX_PCT = 42;
-  private readonly RY_PCT = 40;
-
   get seatedCount(): number {
     return this.seats.filter(s => !s.isEmpty).length;
   }
@@ -38,19 +32,18 @@ export class WaitingTableComponent {
     return `${circ * pct} ${circ}`;
   }
 
-  // Returns positions as percentages so the layout scales with the scene CSS size
-  seatsWithPos(): (WaitingSeat & { xPct: number; yPct: number })[] {
-    const total = this.totalSeats;
-    if (!total) return [];
-    return this.seats.map((seat, i) => {
-      // Start at 90° (bottom = me) and go clockwise
-      const deg = (90 + (360 / total) * i) % 360;
-      const rad = deg * Math.PI / 180;
-      return {
-        ...seat,
-        xPct: 50 + this.RX_PCT * Math.cos(rad),
-        yPct: 50 + this.RY_PCT * Math.sin(rad),
-      };
-    });
+  // n=2 → left=1 right=1 | n=3 → left=1 right=2 | n=4 → left=2 right=2
+  get leftSeats(): WaitingSeat[] {
+    const half = Math.floor(this.seats.length / 2) || 1;
+    return this.seats.slice(0, half);
+  }
+
+  get rightSeats(): WaitingSeat[] {
+    const half = Math.floor(this.seats.length / 2) || 1;
+    return this.seats.slice(half);
+  }
+
+  isDataUrl(avatar: string): boolean {
+    return avatar.startsWith('data:');
   }
 }
