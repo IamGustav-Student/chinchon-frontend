@@ -59,20 +59,12 @@ $surface: #141416;
 
 // ─── SALA DE ESPERA ──────────────────────────────────────────────────────
 .waiting-room {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 1rem; text-align: center; padding: 2rem;
-  .waiting-icon { font-size: 4rem; color: $gold; }
-  h2 { color: $gold; }
-  p  { color: #a0aec0; }
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
 }
-
-.waiting-players { display: flex; flex-direction: column; gap: 0.5rem; }
-.waiting-player {
-  display: flex; align-items: center; gap: 0.5rem;
-  background: rgba(255,255,255,0.05); border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.9rem;
-}
-.wp-dot { width: 8px; height: 8px; border-radius: 50%; background: #4caf50; flex-shrink: 0; }
 
 // ─── FELT AREA ───────────────────────────────────────────────────────────
 .felt-area {

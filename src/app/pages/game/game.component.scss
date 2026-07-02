@@ -74,40 +74,9 @@
 .waiting-room {
   flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: 2rem;
-  text-align: center;
-
-  .waiting-icon { font-size: 4rem; }
-  h2 { color: #c9a227; }
-  p  { color: #a0aec0; }
-}
-
-.waiting-players {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.waiting-player {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(255,255,255,0.05);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-}
-
-.wp-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: #4caf50;
-  flex-shrink: 0;
+  padding: 1rem;
 }
 
 // ─── MESA DE JUEGO ───────────────────────────────────────────────────────────

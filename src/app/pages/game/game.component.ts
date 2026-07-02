@@ -9,6 +9,7 @@ import { ToastService } from '../../services/toast.service';
 import { AudioService } from '../../services/audio.service';
 import { CardComponent } from '../../components/card/card.component';
 import { PlayerAvatarComponent } from '../../components/player-avatar/player-avatar.component';
+import { WaitingTableComponent, WaitingSeat } from '../../components/waiting-table/waiting-table.component';
 
 export interface Card {
   suit: 'oro' | 'copa' | 'basto' | 'espada';
@@ -37,7 +38,7 @@ export interface GameState {
 
 @Component({
   selector: 'app-game',
-  imports: [CardComponent, PlayerAvatarComponent, DecimalPipe],
+  imports: [CardComponent, PlayerAvatarComponent, DecimalPipe, WaitingTableComponent],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
 })
@@ -51,6 +52,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private game = inject(GameService);
 
   tableId = '';
+  maxPlayers = signal(4);
 
   // Estado de la partida
   gameState = signal<GameState | null>(null);
@@ -66,6 +68,25 @@ export class GameComponent implements OnInit, OnDestroy {
   showLeaveConfirm = signal(false);
 
   waitingMessage = signal('Esperando jugadores...');
+
+  waitingSeats = computed((): WaitingSeat[] => {
+    const players = this.gameState()?.players ?? [];
+    const total   = this.maxPlayers();
+    const myId    = this.myId;
+    const filled: WaitingSeat[] = players.map(p => ({
+      username: p.username,
+      avatar: '🃏',
+      isMe: p.id === myId,
+      isEmpty: false,
+    }));
+    const empty: WaitingSeat[] = Array.from({ length: total - filled.length }, () => ({
+      username: '',
+      avatar: '',
+      isMe: false,
+      isEmpty: true,
+    }));
+    return [...filled, ...empty];
+  });
 
   private sub!: Subscription;
 
@@ -93,6 +114,9 @@ export class GameComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.tableId = this.route.snapshot.paramMap.get('id') ?? '';
+    this.game.getTable(this.tableId).subscribe({
+      next: t => this.maxPlayers.set(t.maxPlayers),
+    });
     this.ws.connect();
     this.sub = this.ws.messages$.subscribe(msg => this.handleMessage(msg));
     this.ws.send('join-table', { tableId: this.tableId });

@@ -25,16 +25,7 @@
   <!-- SALA DE ESPERA -->
   @if (!gameState() || gameState()!.status === 'waiting') {
     <div class="waiting-room">
-      <div class="waiting-icon">♠</div>
-      <h2>Esperando jugadores...</h2>
-      <p>La mano comienza cuando haya al menos 2 jugadores sentados.</p>
-      <div class="waiting-players">
-        @for (p of gameState()?.players ?? []; track p.id) {
-          <div class="waiting-player">
-            <span class="wp-dot"></span>{{ p.username }} — ${{ p.stack | number }}
-          </div>
-        }
-      </div>
+      <app-waiting-table [seats]="waitingSeats()" gameName="Hold'em" />
     </div>
   }
 

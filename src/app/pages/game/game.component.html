@@ -19,16 +19,7 @@
   <!-- SALA DE ESPERA -->
   @if (gameState()?.status === 'waiting' || !gameState()) {
     <div class="waiting-room">
-      <div class="waiting-icon">🃏</div>
-      <h2>Sala de espera</h2>
-      <p>{{ waitingMessage() }}</p>
-      <div class="waiting-players">
-        @for (p of gameState()?.players ?? []; track p.id) {
-          <div class="waiting-player">
-            <span class="wp-dot"></span>{{ p.username }}
-          </div>
-        }
-      </div>
+      <app-waiting-table [seats]="waitingSeats()" gameName="Chinchón" />
     </div>
   }
 

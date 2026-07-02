@@ -38,27 +38,7 @@
   <!-- SALA DE ESPERA -->
   @if (!gameState() || gameState()!.status === 'waiting') {
     <div class="waiting-room">
-      <div class="spinner-ring"></div>
-      <h2>Esperando jugadores</h2>
-      <p>Se necesitan <strong>{{ gameState()?.maxPlayers ?? 2 }}</strong> para empezar. Compartí el enlace o esperá que alguien entre.</p>
-      <div class="waiting-players">
-        @for (p of (gameState()?.players ?? []); track p.id) {
-          <div class="waiting-player connected">
-            <span class="wp-dot"></span>
-            <span class="wp-avatar">{{ p.avatar }}</span>
-            <span>{{ p.username }}</span>
-            @if (p.teamIndex === 0) { <span class="team-chip team-0">A</span> }
-            @else { <span class="team-chip team-1">B</span> }
-          </div>
-        }
-        @for (i of [].constructor((gameState()?.maxPlayers ?? 2) - (gameState()?.players?.length ?? 0)); track $index) {
-          <div class="waiting-player empty">
-            <span class="wp-dot empty"></span>
-            <span class="wp-avatar">?</span>
-            <span>Esperando...</span>
-          </div>
-        }
-      </div>
+      <app-waiting-table [seats]="waitingSeats()" gameName="Truco" />
     </div>
   }
 
@@ -145,7 +125,7 @@
 
         <!-- Mis cartas -->
         <div class="my-cards">
-          @for (card of (gameState()!.myCards ?? []); track trackByIndex($index)) {
+          @for (card of gameState()!.myCards; track trackByIndex($index)) {
             <div class="my-card-wrap" [class.played]="card.played" [class.selected]="selectedCard() === $index">
               <app-card
                 [suit]="card.suit"

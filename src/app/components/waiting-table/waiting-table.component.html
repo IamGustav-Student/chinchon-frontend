@@ -1,0 +1,41 @@
+<div class="wt-wrapper">
+  <div class="wt-header">
+    <div class="wt-progress-ring">
+      <svg width="60" height="60" viewBox="0 0 60 60">
+        <circle cx="30" cy="30" r="22" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="4"/>
+        <circle cx="30" cy="30" r="22" fill="none"
+          stroke="#c9a227" stroke-width="4"
+          stroke-linecap="round"
+          [attr.stroke-dasharray]="progressDash"
+          stroke-dashoffset="0"
+          transform="rotate(-90 30 30)"
+          class="ring-progress"/>
+      </svg>
+      <div class="wt-count">{{ seatedCount }}<span>/{{ totalSeats }}</span></div>
+    </div>
+    <p class="wt-subtitle">Esperando jugadores...</p>
+  </div>
+
+  <div class="table-scene">
+    <div class="felt-oval">
+      <div class="felt-label">{{ gameName }}</div>
+    </div>
+
+    @for (seat of seatsWithPos(); track $index) {
+      <div class="seat-chip"
+           [class.occupied]="!seat.isEmpty"
+           [class.mine]="seat.isMe && !seat.isEmpty"
+           [style.left.px]="seat.x"
+           [style.top.px]="seat.y">
+        @if (!seat.isEmpty) {
+          <div class="seat-avatar">{{ seat.avatar }}</div>
+          <div class="seat-name">{{ seat.username }}</div>
+          @if (seat.sub) { <div class="seat-sub">{{ seat.sub }}</div> }
+        } @else {
+          <div class="seat-empty-icon"></div>
+          <div class="seat-name muted">Libre</div>
+        }
+      </div>
+    }
+  </div>
+</div>

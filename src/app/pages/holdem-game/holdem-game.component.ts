@@ -8,6 +8,7 @@ import { HoldemService } from '../../services/holdem.service';
 import { ToastService } from '../../services/toast.service';
 import { AudioService } from '../../services/audio.service';
 import { PokerCardComponent, PokerSuit } from '../../components/poker-card/poker-card.component';
+import { WaitingTableComponent, WaitingSeat } from '../../components/waiting-table/waiting-table.component';
 
 export interface PokerCard { suit: PokerSuit; value: number; }
 
@@ -53,7 +54,7 @@ export interface HandResult {
 
 @Component({
   selector: 'app-holdem-game',
-  imports: [PokerCardComponent, DecimalPipe],
+  imports: [PokerCardComponent, DecimalPipe, WaitingTableComponent],
   templateUrl: './holdem-game.component.html',
   styleUrl: './holdem-game.component.scss',
 })
@@ -96,6 +97,26 @@ export class HoldemGameComponent implements OnInit, OnDestroy {
   phaseLabel = computed(() => {
     const p = this.gameState()?.phase;
     return p ? ({ preflop: 'Pre-flop', flop: 'Flop', turn: 'Turn', river: 'River' }[p]) : '';
+  });
+
+  waitingSeats = computed((): WaitingSeat[] => {
+    const players = this.gameState()?.players ?? [];
+    const total   = 4;
+    const myId    = this.myId;
+    const filled: WaitingSeat[] = players.map(p => ({
+      username: p.username,
+      avatar: p.avatar || '♠',
+      isMe: p.id === myId,
+      isEmpty: false,
+      sub: `$${p.stack}`,
+    }));
+    const empty: WaitingSeat[] = Array.from({ length: total - filled.length }, () => ({
+      username: '',
+      avatar: '',
+      isMe: false,
+      isEmpty: true,
+    }));
+    return [...filled, ...empty];
   });
 
   // Determinar si el jugador es bust y puede recomprar

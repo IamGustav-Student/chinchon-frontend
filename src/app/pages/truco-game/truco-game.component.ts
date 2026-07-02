@@ -7,6 +7,7 @@ import { ToastService } from '../../services/toast.service';
 import { AudioService } from '../../services/audio.service';
 import { CardComponent } from '../../components/card/card.component';
 import { PlayerMenuComponent, PlayerMenuTarget } from '../../components/player-menu/player-menu.component';
+import { WaitingTableComponent, WaitingSeat } from '../../components/waiting-table/waiting-table.component';
 import { WsMessage } from '../../services/websocket.service';
 import {
   TrucoGameState, TrucoCard, TrucoPlayerState, TrucoHandResult, TrucoTrick,
@@ -39,7 +40,7 @@ const PARTNER_SIGNAL_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-truco-game',
-  imports: [CardComponent, PlayerMenuComponent],
+  imports: [CardComponent, PlayerMenuComponent, WaitingTableComponent],
   templateUrl: './truco-game.component.html',
   styleUrl: './truco-game.component.scss',
 })
@@ -84,6 +85,26 @@ export class TrucoGameComponent implements OnInit, OnDestroy {
     const me = this.me();
     if (!gs || !me) return [];
     return gs.players.filter(p => p.teamIndex !== me.teamIndex);
+  });
+
+  waitingSeats = computed((): WaitingSeat[] => {
+    const players = this.gameState()?.players ?? [];
+    const total   = this.gameState()?.maxPlayers ?? 2;
+    const myId    = this.myId();
+    const filled: WaitingSeat[] = players.map(p => ({
+      username: p.username,
+      avatar: p.avatar || '🎴',
+      isMe: p.id === myId,
+      isEmpty: false,
+      sub: p.teamIndex === 0 ? 'Equipo A' : 'Equipo B',
+    }));
+    const empty: WaitingSeat[] = Array.from({ length: total - filled.length }, () => ({
+      username: '',
+      avatar: '',
+      isMe: false,
+      isEmpty: true,
+    }));
+    return [...filled, ...empty];
   });
 
   isMyTurn = computed(() => this.gameState()?.currentTurnId === this.myId());
