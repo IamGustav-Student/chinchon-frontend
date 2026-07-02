@@ -70,10 +70,12 @@
   border-radius: 10px;
   padding: 0.5rem 1rem;
   gap: 0.1rem;
+  &.free { border-color: rgba(76,175,80,0.35); }
 }
 
 .level-buyin  { font-weight: 800; font-size: 0.95rem; color: #c9a227; }
 .level-blinds { font-size: 0.75rem; color: #a0aec0; }
+.free .level-buyin { color: #4caf50; }
 
 // Sección
 .section-title {
@@ -108,6 +110,9 @@
 .htc-buyin { display: flex; flex-direction: column; gap: 0.1rem; }
 .htc-label { font-size: 0.75rem; color: #a0aec0; }
 .htc-value { font-size: 1.25rem; font-weight: 800; }
+.htc-value.green { color: #4caf50; }
+
+.free-table { border-color: rgba(76,175,80,0.25) !important; }
 .gold      { color: #c9a227; }
 
 .htc-blinds { font-size: 0.88rem; color: #a0aec0; strong { color: #fff; } }
@@ -179,6 +184,7 @@
   display: flex; flex-direction: column; align-items: center; gap: 0.1rem;
   transition: all 0.15s;
   &.selected { border-color: #c9a227; color: #c9a227; background: rgba(201,162,39,0.1); }
+  &.free.selected { border-color: #4caf50; color: #4caf50; background: rgba(76,175,80,0.1); }
   &:hover:not(.selected) { border-color: rgba(201,162,39,0.3); color: #fff; }
 }
 
@@ -196,6 +202,7 @@
   font-size: 0.9rem;
   span { color: #a0aec0; }
   .gold    { color: #c9a227; }
+  .green   { color: #4caf50; }
   .danger  { color: #e53935; }
   .success { color: #4caf50; }
 }

@@ -8,9 +8,10 @@ import { SkeletonComponent } from '../../components/skeleton/skeleton.component'
 
 // Configuraciones de mesa disponibles
 export const HOLDEM_CONFIGS = [
-  { buyIn: 500,   blindsSmall: 5,   blindsBig: 10,  label: '$500'  },
-  { buyIn: 1000,  blindsSmall: 10,  blindsBig: 20,  label: '$1.000' },
-  { buyIn: 5000,  blindsSmall: 50,  blindsBig: 100, label: '$5.000' },
+  { buyIn: 0,     blindsSmall: 0,   blindsBig: 0,   label: 'Gratis'  },
+  { buyIn: 500,   blindsSmall: 5,   blindsBig: 10,  label: '$500'    },
+  { buyIn: 1000,  blindsSmall: 10,  blindsBig: 20,  label: '$1.000'  },
+  { buyIn: 5000,  blindsSmall: 50,  blindsBig: 100, label: '$5.000'  },
   { buyIn: 25000, blindsSmall: 250, blindsBig: 500, label: '$25.000' },
 ];
 
@@ -75,7 +76,12 @@ export class HoldemComponent implements OnInit {
     });
   }
 
+  buyInLabel(buyIn: number): string {
+    return buyIn === 0 ? 'Gratis' : `$${buyIn.toLocaleString('es-AR')}`;
+  }
+
   blindsLabel(t: HoldemTableSummary): string {
+    if (t.blindsSmall === 0) return 'Sin ciegas';
     return `$${t.blindsSmall}/$${t.blindsBig}`;
   }
 }

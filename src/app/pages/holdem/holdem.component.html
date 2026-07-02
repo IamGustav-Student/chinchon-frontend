@@ -36,9 +36,11 @@
   <!-- Categorías de mesa -->
   <div class="levels-row">
     @for (cfg of CONFIGS; track cfg.buyIn) {
-      <div class="level-chip">
-        <span class="level-buyin">${{ cfg.buyIn | number }}</span>
-        <span class="level-blinds">{{ cfg.blindsSmall }}/{{ cfg.blindsBig }}</span>
+      <div class="level-chip" [class.free]="cfg.buyIn === 0">
+        <span class="level-buyin">{{ cfg.label }}</span>
+        @if (cfg.buyIn > 0) {
+          <span class="level-blinds">{{ cfg.blindsSmall }}/{{ cfg.blindsBig }}</span>
+        }
       </div>
     }
   </div>
@@ -54,11 +56,13 @@
       <div class="section-title">Disponibles</div>
       <div class="tables-grid">
         @for (t of waiting(); track t.id) {
-          <div class="holdem-table-card panel">
+          <div class="holdem-table-card panel" [class.free-table]="t.buyIn === 0">
             <div class="htc-header">
               <div class="htc-buyin">
                 <span class="htc-label">Buy-in</span>
-                <span class="htc-value gold">${{ t.buyIn | number }}</span>
+                <span class="htc-value" [class.gold]="t.buyIn > 0" [class.green]="t.buyIn === 0">
+                  {{ buyInLabel(t.buyIn) }}
+                </span>
               </div>
               <span class="badge badge-success">Disponible</span>
             </div>
@@ -80,11 +84,13 @@
       <div class="section-title mt-2">En juego</div>
       <div class="tables-grid">
         @for (t of playing(); track t.id) {
-          <div class="holdem-table-card panel">
+          <div class="holdem-table-card panel" [class.free-table]="t.buyIn === 0">
             <div class="htc-header">
               <div class="htc-buyin">
                 <span class="htc-label">Buy-in</span>
-                <span class="htc-value gold">${{ t.buyIn | number }}</span>
+                <span class="htc-value" [class.gold]="t.buyIn > 0" [class.green]="t.buyIn === 0">
+                  {{ buyInLabel(t.buyIn) }}
+                </span>
               </div>
               <span class="badge badge-danger">En juego</span>
             </div>
@@ -123,9 +129,13 @@
         <label>Buy-in (fichas con las que arrancás)</label>
         <div class="options-row">
           @for (cfg of CONFIGS; track cfg.buyIn) {
-            <button class="opt-btn" [class.selected]="selectedBuyIn() === cfg.buyIn" (click)="selectedBuyIn.set(cfg.buyIn)">
+            <button class="opt-btn" [class.selected]="selectedBuyIn() === cfg.buyIn" [class.free]="cfg.buyIn === 0" (click)="selectedBuyIn.set(cfg.buyIn)">
               <span>{{ cfg.label }}</span>
-              <span class="opt-blinds">blinds {{ cfg.blindsSmall }}/{{ cfg.blindsBig }}</span>
+              @if (cfg.buyIn > 0) {
+                <span class="opt-blinds">blinds {{ cfg.blindsSmall }}/{{ cfg.blindsBig }}</span>
+              } @else {
+                <span class="opt-blinds">sin ciegas</span>
+              }
             </button>
           }
         </div>
@@ -134,19 +144,35 @@
       <div class="create-preview">
         <div class="preview-item">
           <span>Se descuenta de tu billetera</span>
-          <strong class="danger">-${{ selectedBuyIn() | number }}</strong>
+          @if (selectedBuyIn() === 0) {
+            <strong class="green">Nada · mesa gratuita</strong>
+          } @else {
+            <strong class="danger">-${{ selectedBuyIn() | number }}</strong>
+          }
         </div>
         <div class="preview-item">
           <span>Fichas con las que jugás</span>
-          <strong class="gold">${{ selectedBuyIn() | number }}</strong>
+          @if (selectedBuyIn() === 0) {
+            <strong class="green">Gratis</strong>
+          } @else {
+            <strong class="gold">${{ selectedBuyIn() | number }}</strong>
+          }
         </div>
         <div class="preview-item">
           <span>Blinds</span>
-          <strong>${{ selectedConfig().blindsSmall }}/${{ selectedConfig().blindsBig }}</strong>
+          @if (selectedConfig().blindsSmall === 0) {
+            <strong>Sin ciegas</strong>
+          } @else {
+            <strong>${{ selectedConfig().blindsSmall }}/${{ selectedConfig().blindsBig }}</strong>
+          }
         </div>
         <div class="preview-item">
           <span>Al salir te devuelven</span>
-          <strong class="success">Tu stack actual</strong>
+          @if (selectedBuyIn() === 0) {
+            <strong>—</strong>
+          } @else {
+            <strong class="success">Tu stack actual</strong>
+          }
         </div>
       </div>
 
