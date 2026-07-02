@@ -200,6 +200,13 @@ export class GameComponent implements OnInit, OnDestroy {
       case 'player-joined':
         this.waitingMessage.set(`${data.username} se unió. Esperando más jugadores...`);
         this.audio.join();
+        if (data.id) {
+          this.gameState.update(s => {
+            if (!s) return s;
+            if (s.players.some(p => p.id === data.id)) return s;
+            return { ...s, players: [...s.players, { id: data.id, username: data.username, cardCount: 0, score: 0 }] };
+          });
+        }
         break;
 
       case 'player-disconnected':

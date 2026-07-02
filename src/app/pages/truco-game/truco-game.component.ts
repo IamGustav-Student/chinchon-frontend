@@ -266,6 +266,25 @@ export class TrucoGameComponent implements OnInit, OnDestroy {
         break;
       }
 
+      case 'truco-player-joined':
+        this.toast.info(`${data.username} se unió.`);
+        if (!this.muted()) this.audio.join();
+        if (data.id) {
+          this.gameState.update(gs => {
+            if (!gs) return gs;
+            if (gs.players.some(p => p.id === data.id)) return gs;
+            return {
+              ...gs,
+              players: [...gs.players, {
+                id: data.id, username: data.username, avatar: data.avatar || '🎴',
+                teamIndex: data.teamIndex ?? 0, seatIndex: data.seatIndex ?? gs.players.length,
+                isMano: false, cardCount: 0, cardPlayed: null, lastAction: null,
+              }],
+            };
+          });
+        }
+        break;
+
       case 'truco-game-over':
         this.gameState.update(gs => gs ? { ...gs, status: 'finished' } : gs);
         break;

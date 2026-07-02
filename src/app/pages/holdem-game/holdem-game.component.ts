@@ -208,6 +208,22 @@ export class HoldemGameComponent implements OnInit, OnDestroy {
       case 'holdem-player-joined':
         this.toast.info(`${data.username} se sentó en la mesa.`);
         this.audio.join();
+        if (data.id) {
+          this.gameState.update(s => {
+            if (!s) return s;
+            if (s.players.some(p => p.id === data.id)) return s;
+            return {
+              ...s,
+              players: [...s.players, {
+                id: data.id, username: data.username, avatar: data.avatar || '♠',
+                stack: data.stack ?? s.buyIn, currentBet: 0, folded: false,
+                isAllIn: false, seatIndex: data.seatIndex ?? s.players.length,
+                isDealer: false, isSmallBlind: false, isBigBlind: false,
+                holeCards: null, lastAction: null,
+              }],
+            };
+          });
+        }
         break;
 
       case 'holdem-player-left':
