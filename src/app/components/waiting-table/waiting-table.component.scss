@@ -64,16 +64,16 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 200px;
-  height: 110px;
+  width: 60%;
+  height: 52%;
   background: radial-gradient(ellipse at 50% 35%, #1c4a1c 0%, #0d2810 65%, #081a08 100%);
   border-radius: 50%;
   border: 3px solid #2a5e2a;
   box-shadow:
-    0 0 0 5px rgba(42,94,42,0.25),
-    0 0 0 7px rgba(0,0,0,0.5),
-    inset 0 0 24px rgba(0,0,0,0.45),
-    0 8px 32px rgba(0,0,0,0.6);
+    0 0 0 6px rgba(42,94,42,0.22),
+    0 0 0 9px rgba(0,0,0,0.45),
+    inset 0 0 32px rgba(0,0,0,0.45),
+    0 10px 40px rgba(0,0,0,0.7);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -18,8 +18,10 @@ export class WaitingTableComponent {
   @Input() gameName = '';
 
   // Orbit radii as percentage of scene (50% = center, measured from center outward)
-  private readonly RX_PCT = 38;
-  private readonly RY_PCT = 38;
+  // Oval is 60% wide (±30% from center) and 52% tall (±26% from center)
+  // Seats orbit at 42%/40% so they clear the oval edge
+  private readonly RX_PCT = 42;
+  private readonly RY_PCT = 40;
 
   get seatedCount(): number {
     return this.seats.filter(s => !s.isEmpty).length;
