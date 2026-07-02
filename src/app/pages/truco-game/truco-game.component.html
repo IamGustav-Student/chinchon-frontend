@@ -99,10 +99,10 @@
 
         <!-- Cartas sobre la mesa (baza actual) -->
         <div class="trick-cards">
-          @for (play of gameState()!.currentTrickPlays; track play.playerId) {
+          @for (play of gameState()!.currentTrickPlays; track play.userId) {
             <div class="trick-play">
               <app-card [suit]="play.card.suit" [value]="play.card.value" [faceDown]="false" />
-              <span class="play-name">{{ getPlayerById(play.playerId)?.username }}</span>
+              <span class="play-name">{{ getPlayerById(play.userId)?.username }}</span>
             </div>
           }
         </div>

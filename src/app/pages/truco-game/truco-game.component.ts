@@ -226,6 +226,7 @@ export class TrucoGameComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.sub?.unsubscribe();
+    this.ws.disconnect();
   }
 
   // ── WS handlers ──────────────────────────────────────────────────────────
@@ -344,7 +345,7 @@ export class TrucoGameComponent implements OnInit, OnDestroy {
   }
 
   cardPlayedBy(playerId: number): TrucoCard | null {
-    const play = this.gameState()?.currentTrickPlays.find(p => p.playerId === playerId);
+    const play = this.gameState()?.currentTrickPlays.find(p => p.userId === playerId);
     return play?.card ?? null;
   }
 

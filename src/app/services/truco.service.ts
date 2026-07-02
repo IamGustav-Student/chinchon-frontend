@@ -59,7 +59,7 @@ export interface TrucoGameState {
   envidoOpen: boolean;
   challenge: TrucoChallenge | null;
   tricks: TrucoTrick[];
-  currentTrickPlays: { playerId: number; card: TrucoCard }[];
+  currentTrickPlays: { userId: number; card: TrucoCard }[];
 }
 
 export interface TrucoTableSummary {
