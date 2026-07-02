@@ -11,11 +11,17 @@
 }
 
 .navbar-logo {
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: #c9a227;
   text-decoration: none;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.navbar-logo-img {
+  height: 48px;
+  width: 48px;
+  object-fit: contain;
+  border-radius: 50%;
 }
 
 .navbar-links {

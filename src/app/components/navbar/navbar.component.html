@@ -1,6 +1,8 @@
 @if (auth.isLoggedIn()) {
   <nav class="navbar">
-    <a class="navbar-logo" routerLink="/dashboard">🃏 Juegos de Carta</a>
+    <a class="navbar-logo" routerLink="/dashboard">
+      <img src="/assets/images/logo.webp" alt="Juegos de Carta" class="navbar-logo-img" />
+    </a>
     <ul class="navbar-links">
       <li><a routerLink="/dashboard" routerLinkActive="active">Inicio</a></li>
       <li><a routerLink="/ranking" routerLinkActive="active">Ranking</a></li>
